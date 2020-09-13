@@ -1,0 +1,5 @@
+63735605515057	[info]	New log created on: 13/09/2020 14:51:55 (+10:00)
+63735605515060	[info]	Include.Util v.20.9.6.1157 called using Log.
+63735605515061	[verb]	Server: bound to port 12345
+63735605515062	[verb]	Server: awaiting connections on 192.168.1.42
+63735605515066	[verb]	Server: waiting for new connection
