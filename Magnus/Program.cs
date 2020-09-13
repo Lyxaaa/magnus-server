@@ -38,6 +38,7 @@ namespace Magnus {
             };
 
             server.Begin();
+            database.InsertUser("Elmo","","","","");
 
             //Console.ReadKey();
             //server.End();
