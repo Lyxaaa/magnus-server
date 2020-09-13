@@ -33,6 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Include.Newtonsoft.Json">
+      <HintPath>..\references\Include.Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Include.Util">
+      <HintPath>..\references\Include.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="Networking">
+      <HintPath>..\references\Networking.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
