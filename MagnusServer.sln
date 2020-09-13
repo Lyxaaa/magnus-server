@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagnusServer", "MagnusServer\MagnusServer.csproj", "{22804DE6-4E0C-40DE-9337-40C4F03F5933}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{22804DE6-4E0C-40DE-9337-40C4F03F5933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseConnection", "DatabaseConnection\DatabaseConnection.csproj", "{26413B0C-18B6-4E09-BB0D-EA6CBDC78B41}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{26413B0C-18B6-4E09-BB0D-EA6CBDC78B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnus", "Magnus\Magnus.csproj", "{55C7711C-A159-4600-9BA0-04DFFA2DE03F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{26413B0C-18B6-4E09-BB0D-EA6CBDC78B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26413B0C-18B6-4E09-BB0D-EA6CBDC78B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26413B0C-18B6-4E09-BB0D-EA6CBDC78B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

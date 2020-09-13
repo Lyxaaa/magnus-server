@@ -1,0 +1,3 @@
+D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Magnus\obj\Debug\Magnus.csprojAssemblyReference.cache
+D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Magnus\obj\Debug\Magnus.exe.config
+D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Magnus\obj\Debug\Magnus.csproj.CoreCompileInputs.cache
