@@ -261,9 +261,9 @@ namespace DatabaseConnection
 
 
         //returns all messages in a conversation in reverse cronological order (most recent to olders)
-        public List<Tuple<string, string>> GetMessages(string Conversation_ID)
+        public List<Tuple<string, string, string>> GetMessages(string Conversation_ID)
         {
-            var myReturn = new List<Tuple<string, string>>();
+            var myReturn = new List<Tuple<string, string, string>>();
             if (dbCon.IsConnect())
             {
                 string query = "SELECT Text, DateTime, Sender_Email FROM message WHERE Conversation_ID  = " + Conversation_ID+ " ORDER BY DateTime DESC";
@@ -272,7 +272,7 @@ namespace DatabaseConnection
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1)));
+                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1), reader.GetString(1)));
                 }
 
                 reader.Close();
