@@ -95,13 +95,16 @@ namespace Magnus {
 
         public ServerClient(TcpClient client, OnInitialConnect listener) {
             OnIntialConnectListener += listener;
-            Timer timer = new Timer(15000);
+            Timer timer = new Timer(5000);
+            timer.Start();
             timer.Elapsed += (object source, ElapsedEventArgs e) => {
                 OnIntialConnectListener?.Invoke(this, InitialConnectStatus.Timeout);
                 OnIntialConnectListener = null;
+                timer.Stop();
             };
 
             OnReceive initial = (type, protocol, data) => {
+                timer.Stop();
                 if (I.Message.TryCast(protocol, data, (int)MsgType.Initialise, out Initialise init)) {
                     id = init.id;
                     OnIntialConnectListener?.Invoke(this, InitialConnectStatus.Success);
@@ -140,7 +143,7 @@ namespace Magnus {
                         msg = ((I.Message)data).message;
                         break;
                 }
-                Log.D($"There Client: got message from {clientId}: {msg}");
+                Log.D($"Client: got message from {clientId}: {msg}");
             };
         }
     }

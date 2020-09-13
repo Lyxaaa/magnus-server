@@ -8,7 +8,7 @@ namespace Magnus {
 
         static void Main(string[] args) {
             var database = new Database();
-            var server = new Server(null, 12345);
+            var server = new Server(null, 2457);
 
             server.OnReceiveListener += (clientId, socketType, dataType, data) => {
                 #region Login

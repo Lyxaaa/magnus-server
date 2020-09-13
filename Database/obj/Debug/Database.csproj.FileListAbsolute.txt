@@ -124,3 +124,4 @@ D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Database\obj\Debug\Datab
 D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Database\obj\Debug\Database.csproj.CopyComplete
 D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Database\obj\Debug\DatabaseConnection.dll
 D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Database\obj\Debug\DatabaseConnection.pdb
+D:\Users\CYao\Dropbox\Uni\DECO3801\Project\MagnusServer\Database\obj\Debug\Database.csprojAssemblyReference.cache
