@@ -35,6 +35,22 @@ namespace Magnus {
         public string error { get; set; }
     }
 
+    public class Login : Message {
+        public new MsgType type = MsgType.Login;
+        public string email { get; set; }
+        public string password { get; set; }
+    }
+
+    public class LoginResult : Message {
+        public new MsgType type = MsgType.LoginResult;
+        public Result result;
+        public string error;
+        public string userName;
+        public string uniqueId;
+        public string bio;
+        public byte[] profile;
+    }
+
     public enum Result : int {
         Success, Pending, Failure
     }

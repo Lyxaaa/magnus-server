@@ -208,13 +208,13 @@ namespace Magnus {
         }
 
         #region Device Coms
-        void SendToAllClients(object data, Include.SocketType socketType = Include.SocketType.TCP, DataType dataType = DataType.JSON) {
+        public void SendToAllClients(object data, Include.SocketType socketType = Include.SocketType.TCP, DataType dataType = DataType.JSON) {
             foreach (Client client in clients.Values) {
                 client.Send(data, socketType, dataType);
             }
         }
 
-        void SendToClient(string clientId, object data, Include.SocketType socketType = Include.SocketType.TCP, DataType dataType = DataType.JSON) {
+        public void SendToClient(string clientId, object data, Include.SocketType socketType = Include.SocketType.TCP, DataType dataType = DataType.JSON) {
             if (clients.TryGetValue(clientId, out Client client)) {
                 client.Send(data, socketType, dataType);
             }

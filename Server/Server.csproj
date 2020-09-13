@@ -36,14 +36,17 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Include.Newtonsoft.Json">
-      <HintPath>..\..\..\..\Thesis\Core\Networking\bin\Release\Include.Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Include.Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\references\Include.Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Include.Util">
-      <HintPath>..\..\..\..\Thesis\Core\Networking\bin\Release\Include.Util.dll</HintPath>
+    <Reference Include="Include.Util, Version=20.9.6.1157, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\references\Include.Util.dll</HintPath>
     </Reference>
-    <Reference Include="Networking">
-      <HintPath>..\..\..\..\Thesis\Core\Networking\bin\Release\Networking.dll</HintPath>
+    <Reference Include="Networking, Version=20.9.11.1719, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\references\Networking.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
