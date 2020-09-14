@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Include.Util;
 using MySql.Data;
 using MySql.Data.MySqlClient;
 
@@ -38,7 +39,7 @@ namespace DatabaseConnection
                             results[i] = reader.GetString(i);
                         }
                     }
-                    Console.WriteLine("Email:" + results[0] + ", Password:" + results[1] + ", Name:" + results[2] + ", Bio:" + results[3] + ", Profile:" + results[4]);
+                    Log.D("Database: Email:" + results[0] + ", Password:" + results[1] + ", Name:" + results[2] + ", Bio:" + results[3] + ", Profile:" + results[4]);
                 }
                 reader.Close();
             }
@@ -62,7 +63,7 @@ namespace DatabaseConnection
                             results[i] = reader.GetString(i+1);
                         }
                     }
-                    Console.WriteLine("Start:" + results[0] + ", Ended:" + results[1] + ", Last Board State:" + results[2]);
+                    Log.D("Database: Start:" + results[0] + ", Ended:" + results[1] + ", Last Board State:" + results[2]);
                 }
                 reader.Close();
             }
@@ -88,7 +89,7 @@ namespace DatabaseConnection
                             results[i] = reader.GetString(i);
                         }
                     }
-                    Console.WriteLine("Email:" + results[0] + ", Password:" + results[1] + ", Name:" + results[2] + ", Bio:" + results[3] + ", Profile:" + results[4]);
+                    Log.D("Database: Email:" + results[0] + ", Password:" + results[1] + ", Name:" + results[2] + ", Bio:" + results[3] + ", Profile:" + results[4]);
                     myReturn.Add(Tuple.Create(results[0], results[1], results[2], results[3], results[4]));
                 }
                 reader.Close();
@@ -297,8 +298,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -323,8 +324,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -349,8 +350,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -376,8 +377,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -403,8 +404,8 @@ namespace DatabaseConnection
                     else { return false; }
                 }
                 catch (Exception e) {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -428,8 +429,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -460,8 +461,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -493,8 +494,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -520,8 +521,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }
@@ -552,8 +553,8 @@ namespace DatabaseConnection
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("shit went wrong");
-                    Console.WriteLine(e);
+                    Log.D("Database: shit went wrong");
+                    Log.E(e.ToString());
                     return false;
                 }
             }

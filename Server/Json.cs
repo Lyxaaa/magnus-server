@@ -43,52 +43,52 @@ namespace Magnus {
 
     public class LoginResult : Message {
         public new MsgType type = MsgType.LoginResult;
-        public Result result;
-        public string error;
-        public string userName;
-        public string uniqueId;
-        public string bio;
-        public byte[] profile;
+        public Result result { get; set; }
+        public string error { get; set; }
+        public string userName { get; set; }
+        public string uniqueId { get; set; }
+        public string bio { get; set; }
+        public byte[] profile { get; set; }
     }
 
     public enum Result : int {
-        Success, Pending, Failure
+        Success = 0, Pending = 1, Failure = 2
     }
 
     public enum MsgType : int {
-        Ack,
-        Heartbeat,
+        Ack = 0,
+        Heartbeat = 1,
 
-        Initialise,
-        InitialiseResult,
+        Initialise = 2,
+        InitialiseResult = 3,
 
-        RegisterUser,
-        RegisterUserResult,
+        RegisterUser = 4,
+        RegisterUserResult = 5,
 
-        UpdateUserProfile,
+        UpdateUserProfile = 6,
 
-        SendFriendRequest,
-        AddFriend,
+        SendFriendRequest = 7,
+        AddFriend = 8,
 
-        GetMyFriendRequests,
-        GetFriendsRequestingMe,
+        GetMyFriendRequests = 9,
+        GetFriendsRequestingMe = 10,
 
-        GetFriends,
+        GetFriends = 11,
 
-        SendMessage,
+        SendMessage = 12,
 
-        RetrieveUserProfile,
+        RetrieveUserProfile = 13,
 
-        GetMatchDetails,
+        GetMatchDetails = 14,
 
-        Login,
-        LoginResult,
+        Login = 15,
+        LoginResult = 16,
 
-        EnterMatchQueue,
-        MatchFound,
+        EnterMatchQueue = 17,
+        MatchFound = 18,
 
 
-        Disconnect,
+        Disconnect = 19,
 
         Unknown = int.MaxValue
     }
