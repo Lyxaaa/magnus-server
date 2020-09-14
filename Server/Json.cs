@@ -43,12 +43,12 @@ namespace Magnus {
 
     public class LoginResult : Message {
         public new MsgType type = MsgType.LoginResult;
-        public Result result;
-        public string error;
-        public string userName;
-        public string uniqueId;
-        public string bio;
-        public byte[] profile;
+        public Result result { get; set; }
+        public string error { get; set; }
+        public string userName { get; set; }
+        public string uniqueId { get; set; }
+        public string bio { get; set; }
+        public byte[] profile { get; set; }
     }
 
     public enum Result : int {
