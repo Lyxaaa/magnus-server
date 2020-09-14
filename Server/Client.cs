@@ -37,9 +37,6 @@ namespace Magnus {
         long lastHeartBeatAck = 0;
         int heartBeatInterval = 1000;
         Timer heartBeat;
-        int dcCheckInterval = 2000;
-        int dcTimeout = 5000;
-        Timer dcChecker;
 
         // sends a new heartbeat every {heartBeatInterval}ms
         protected void StartHeartBeat() {
@@ -53,23 +50,6 @@ namespace Magnus {
                 Send(new Message() { type = MsgType.Heartbeat });
             };
             heartBeat.Start();
-        }
-
-        // checks to see if we've timed out every {dcCheckInterval}ms, timeout is when time between pings is greater than {dcTimeout}ms
-        protected void StartDCChecker() {
-            dcChecker = new Timer() {
-                AutoReset = true,
-                Enabled = true,
-                Interval = dcCheckInterval
-            };
-
-            dcChecker.Elapsed += (sender, args) => {
-                if (lastHeartBeatAck != 0 && (Net.Util.GetTimeMillis() - lastHeartBeatAck) >= dcTimeout) {
-                    OnDisconnectListener?.Invoke();
-                    End();
-                }
-            };
-            dcChecker.Start();
         }
 
         protected void HeartBeatAck(Include.SocketType socketType, DataType dataType, object data) {
@@ -109,6 +89,11 @@ namespace Magnus {
                     id = init.id;
                     OnIntialConnectListener?.Invoke(this, InitialConnectStatus.Success);
                     OnIntialConnectListener = null;
+                    OnReceiveListener += HeartBeatAck;
+                    StartHeartBeat();
+
+                    tcp.OnSocketClosedListener += () => { OnDisconnectListener?.Invoke(); };
+
                 } else {
                     OnIntialConnectListener?.Invoke(this, InitialConnectStatus.Failure);
                     OnIntialConnectListener = null;
