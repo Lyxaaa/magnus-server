@@ -10,25 +10,35 @@ namespace Magnus {
             var database = new Database();
             var server = new Server(null, 2457);
 
-            server.OnReceiveListener += (clientId, socketType, dataType, data) => {
+            server.OnReceiveListener += (clientId, socketType, dataType, data) =>
+            {
                 #region Login
-                if (Msg.TryCast(dataType, data, (int)MsgType.Login, out Login login)) {
+                if (Msg.TryCast(dataType, data, (int)MsgType.Login, out Login login))
+                {
                     var result = database.GetSelectUserProfile(login.email);
 
-                    if(result.Item1 != login.email) {
-                        server.SendToClient(clientId, new LoginResult() {
+                    if (result.Item1 != login.email)
+                    {
+                        server.SendToClient(clientId, new LoginResult()
+                        {
                             result = Result.Failure,
                             error = "invalid email or password"
                         });
-                    } else if (result.Item2 == login.password) {
-                        server.SendToClient(clientId, new LoginResult() {
+                    }
+                    else if (result.Item2 == login.password)
+                    {
+                        server.SendToClient(clientId, new LoginResult()
+                        {
                             result = Result.Success,
                             userName = result.Item3,
                             bio = result.Item4
                             //profile = result.Item5 // < this is a file directory, convert this into bytes and then send it
                         });
-                    } else {
-                        server.SendToClient(clientId, new LoginResult() {
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new LoginResult()
+                        {
                             result = Result.Failure,
                             error = "invalid password or email"
                         });
@@ -38,7 +48,8 @@ namespace Magnus {
             };
 
             server.Begin();
-            database.InsertUser("Elmo","","","","");
+            database.GetSelectUserProfile("Elmo");
+            //database.InsertUser("Elmo","","","","");
 
             //Console.ReadKey();
             //server.End();
