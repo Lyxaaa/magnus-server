@@ -362,3 +362,4 @@ MigrationBackup/
 FodyWeavers.xsd
 *.cache
 Database/obj/Debug/Database.csproj.CoreCompileInputs.cache
+Database/obj/Debug/Database.csproj.CoreCompileInputs.cache
