@@ -51,6 +51,103 @@ namespace Magnus {
         public byte[] profile { get; set; }
     }
 
+    public class GenericResponse : Message
+    {
+        public new MsgType type = MsgType.GenericResponse;
+        public MsgType acknowledging;
+        public bool success { get; set; }
+    }
+
+    public class RegisterUser : Message
+    {
+        public new MsgType type = MsgType.RegisterUser;
+        public string email { get; set; }
+        public string password { get; set; }
+        public string name { get; set; }
+        public string bio { get; set; }
+    }
+
+    public class UpdateUserProfile : Message
+    {
+        public new MsgType type = MsgType.UpdateUserProfile;
+        public string email { get; set; }
+        public string name { get; set; }
+        public string bio { get; set; }
+        public byte[] profile { get; set; }
+    }
+
+    public class UpdateUserPassword : Message
+    {
+        public new MsgType type = MsgType.UpdateUserPassword;
+        public string email { get; set; }
+        public string oldpassword { get; set; }
+        public string newoassword { get; set; }
+    }
+
+    public class SendFriendRequest : Message
+    {
+        public new MsgType type = MsgType.SendFriendRequest;
+        public string fromemail { get; set; }
+        public string toemail { get; set; }
+    }
+
+    public class AcceptFriend : Message
+    {
+        public new MsgType type = MsgType.AcceptFriend;
+        public string fromemail { get; set; }
+        public string toemail { get; set; }
+    }
+    public class AcceptFriendResult : Message
+    {
+        public new MsgType type = MsgType.AcceptFriendResult;
+        public bool success { get; set; }
+        public int conversationid { get; set; }
+    }
+
+    public class GetMyFriendRequests : Message
+    {
+        public new MsgType type = MsgType.GetMyFriendRequests;
+        public string email { get; set; }
+    }
+
+    public class GetMyFriendRequestsResult : Message
+    {
+        public new MsgType type = MsgType.GetMyFriendRequestsResult;
+        public string[] name { get; set; }
+        public int[] userid { get; set; }
+        public string[] email { get; set; }
+    }
+
+    public class GetFriendsRequestingMe : Message
+    {
+        public new MsgType type = MsgType.GetFriendsRequestingMe;
+        public string email { get; set; }
+    }
+
+    public class GetFriendsRequestingMeResult : Message
+    {
+        public new MsgType type = MsgType.GetFriendsRequestingMeResult;
+        public string[] name { get; set; }
+        public int[] userid { get; set; }
+        public string[] email { get; set; }
+    }
+
+    public class GetFriends : Message
+    {
+        public new MsgType type = MsgType.GetFriends;
+        public string email { get; set; }
+    }
+
+    public class GetFriendsResult : Message
+    {
+        public new MsgType type = MsgType.GetFriendsResult;
+        public string[] name { get; set; }
+        public int[] userid { get; set; }
+        public string[] email { get; set; }
+        public int[] conversationid { get; set; }
+    }
+
+
     public enum Result : int {
         Success = 0, Pending = 1, Failure = 2
     }
@@ -64,7 +161,7 @@ namespace Magnus {
         InitialiseResult = 3,
 
         RegisterUser = 4,
-        RegisterUserResult = 5,
+        GenericResponse = 5,
 
         UpdateUserProfile = 6,
 
@@ -107,6 +204,8 @@ namespace Magnus {
 
         Unknown = int.MaxValue
     }
+
+
 
 
 
