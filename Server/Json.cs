@@ -70,7 +70,7 @@ namespace Magnus {
 
         SendFriendRequest = 7,
         AcceptFriend = 8,
-        AcceptFriendResult = 9
+        AcceptFriendResult = 9,
 
         GetMyFriendRequests = 10,
         GetMyFriendRequestsResult = 11,
