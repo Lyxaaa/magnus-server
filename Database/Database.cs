@@ -447,7 +447,7 @@ namespace DatabaseConnection
                 try
                 {
                     //remove from friend request
-                    string query = "DELETE FROM friend_request WHERE Sender = '" + RequestFromEmail + "' AND  Reciver ='" + AcceptedEmail + "'";
+                    string query = "DELETE FROM friend_request WHERE Sender = ('" + RequestFromEmail + "' AND  Reciver ='" + AcceptedEmail + "') OR Sender = ('" + AcceptedEmail + "' AND  Reciver ='" + RequestFromEmail + "')";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     var result = cmd.ExecuteNonQuery();
                     Console.WriteLine(result);
