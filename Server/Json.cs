@@ -55,7 +55,8 @@ namespace Magnus {
         Success = 0, Pending = 1, Failure = 2
     }
 
-    public enum MsgType : int {
+    public enum MsgType : int
+    {
         Ack = 0,
         Heartbeat = 1,
 
@@ -68,28 +69,45 @@ namespace Magnus {
         UpdateUserProfile = 6,
 
         SendFriendRequest = 7,
-        AddFriend = 8,
+        AcceptFriend = 8,
+        AcceptFriendResult = 9
 
-        GetMyFriendRequests = 9,
-        GetFriendsRequestingMe = 10,
+        GetMyFriendRequests = 10,
+        GetMyFriendRequestsResult = 11,
 
-        GetFriends = 11,
+        GetFriendsRequestingMe = 12,
+        GetFriendsRequestingMeResult = 13,
 
-        SendMessage = 12,
+        GetFriends = 14,
+        GetFriendsResult = 15,
 
-        RetrieveUserProfile = 13,
-
-        GetMatchDetails = 14,
-
-        Login = 15,
-        LoginResult = 16,
-
-        EnterMatchQueue = 17,
-        MatchFound = 18,
+        SendMessage = 16,
+        RetrieveMessages = 17,
+        RetrieveMessagesResult = 18,
 
 
-        Disconnect = 19,
+        RetrieveUserProfile = 19,
+        RetrieveUserProfileResult = 20,
+
+        GetMatchDetails = 21,
+
+        Login = 22,
+        LoginResult = 23,
+
+        EnterMatchQueue = 24,
+        MatchFound = 25,
+
+
+        Disconnect = 26,
+
+        UpdateUserPassword = 27,
+        CreateMatch = 28,
+        CreateMatchResult = 29,
+
 
         Unknown = int.MaxValue
     }
+
+
+
 }
