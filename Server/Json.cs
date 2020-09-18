@@ -147,6 +147,30 @@ namespace Magnus {
         public int[] conversationid { get; set; }
     }
 
+    public class SendMessage : Message
+    {
+        public new MsgType type = MsgType.SendMessage;
+        public string email { get; set; }
+        public string text { get; set; }
+        public int conversationid { get; set; }
+    }
+
+    public class RetrieveMessages : Message
+    {
+        public new MsgType type = MsgType.RetrieveMessages;
+        public int conversationid { get; set; }
+        public string datetime { get; set; }
+    }
+
+    public class RetrieveMessagesResult : Message
+    {
+        public new MsgType type = MsgType.RetrieveMessagesResult;
+        public int[] userid { get; set; }
+        public string[] email { get; set; }
+        public string[] text { get; set; }
+        public string[] datetime { get; set; }
+    }
+
 
     public enum Result : int {
         Success = 0, Pending = 1, Failure = 2
