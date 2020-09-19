@@ -168,9 +168,75 @@ namespace Magnus {
         public int[] userid { get; set; }
         public string[] email { get; set; }
         public string[] text { get; set; }
-        public string[] datetime { get; set; }
+        public string[] datetime { get; set; } //temp string as that is how the database function returns it but should probably convert
     }
 
+    public class RetrieveUserProfile : Message
+    {
+        public new MsgType type = MsgType.RetrieveUserProfile;
+        public string email { get; set; }
+    }
+
+    public class RetrieveUserProfileResult : Message
+    {
+        public new MsgType type = MsgType.RetrieveUserProfileResult;
+        public int userid { get; set; }
+        public string email { get; set; }
+        public string name { get; set; }
+        public string bio { get; set; }
+        public byte[] profile { get; set; }
+    }
+
+    public class GetMatchDetails : Message
+    {
+        public new MsgType type = MsgType.GetMatchDetails;
+        public int matchid { get; set; }
+    }
+
+    public class GetMatchDetailsResult : Message
+    {
+        public new MsgType type = MsgType.GetMatchDetailsResult;
+        public int matchid { get; set; }
+        public string email_1 { get; set; }
+        public string email_2 { get; set; }
+        public int userid_1 { get; set; }
+        public int userid_2 { get; set; }
+        public string board { get; set; }
+        public string start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
+        public bool ended { get; set; }
+    }
+
+    public class CreateMatch : Message
+    {
+        public new MsgType type = MsgType.CreateMatch;
+        public string email_1 { get; set; }
+        public string email_2 { get; set; }
+    }
+
+    public class CreateMatchResult : Message
+    {
+        public new MsgType type = MsgType.CreateMatchResult;
+        public bool success { get; set; }
+        public int matchid { get; set; }
+        public int conversationid { get; set; }
+    }
+
+    public class GetMatchHistory : Message
+    {
+        public new MsgType type = MsgType.GetMatchHistory;
+        public string email_1 { get; set; }
+    }
+
+    public class GetMatchHistoryResult : Message
+    {
+        public new MsgType type = MsgType.GetMatchHistoryResult;
+        public int[] userid { get; set; }
+        public string[] email { get; set; }
+        public int[] matchid { get; set; }
+        public string[] board { get; set; }
+        public string[] start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
+        public bool[] ended { get; set; }
+    }
 
     public enum Result : int {
         Success = 0, Pending = 1, Failure = 2
@@ -215,19 +281,22 @@ namespace Magnus {
         Login = 22,
         LoginResult = 23,
 
-        EnterMatchQueue = 24,
-        MatchFound = 25,
+        EnterMatchQueue = 24,//not sure how we are handeling this
+        MatchFound = 25,     //not sure how we are handeling this
 
 
-        Disconnect = 26,
+        Disconnect = 26,     //not sure how we are handeling this
 
         UpdateUserPassword = 27,
         CreateMatch = 28,
         CreateMatchResult = 29,
-
+        GetMatchDetailsResult = 30,
+        GetMatchHistory = 31,
+        GetMatchHistoryResult = 32,
 
         Unknown = int.MaxValue
     }
+
 
 
 
