@@ -39,8 +39,8 @@ namespace DatabaseConnection {
                     connection?.Open();
                 }
 
-                return connection == null;
-            } catch {
+                return connection != null;
+            } catch (Exception e){
                 return false;
             }
         }

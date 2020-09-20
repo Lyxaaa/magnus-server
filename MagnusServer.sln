@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Databa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnus", "Magnus\Magnus.csproj", "{55C7711C-A159-4600-9BA0-04DFFA2DE03F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{88E4B086-D50B-4123-A74D-E5D42B4CB15E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55C7711C-A159-4600-9BA0-04DFFA2DE03F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

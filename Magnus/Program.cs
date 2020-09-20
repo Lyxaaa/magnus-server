@@ -1,4 +1,5 @@
 ﻿using DatabaseConnection;
+using System;
 using Msg = Include.Json.Message;
 
 namespace Magnus {
@@ -48,10 +49,11 @@ namespace Magnus {
             };
 
             server.Begin();
-            database.GetSelectUserProfile("Elmo");
-            //database.InsertUser("Elmo","","","","");
 
-            //Console.ReadKey();
+            //database.GetSelectUserProfile("Elmo");
+            database.InsertUser("Elmo", "", "", "", "");
+
+            Console.ReadKey();
             //server.End();
         }
     }
