@@ -49,12 +49,9 @@ namespace Magnus {
             };
 
             server.Begin();
-
-            //database.GetSelectUserProfile("Elmo");
-            database.InsertUser("Elmo", "", "", "", "");
-
+            
             Console.ReadKey();
-            //server.End();
+            server.End();
         }
     }
 }
