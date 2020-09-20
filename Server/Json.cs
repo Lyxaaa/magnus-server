@@ -114,7 +114,7 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.GetMyFriendRequestsResult;
         public string[] name { get; set; }
-        public int[] userid { get; set; }
+        public string[] userid { get; set; }
         public string[] email { get; set; }
     }
 
@@ -128,7 +128,7 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.GetFriendsRequestingMeResult;
         public string[] name { get; set; }
-        public int[] userid { get; set; }
+        public string[] userid { get; set; }
         public string[] email { get; set; }
     }
 
@@ -142,7 +142,7 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.GetFriendsResult;
         public string[] name { get; set; }
-        public int[] userid { get; set; }
+        public string[] userid { get; set; }
         public string[] email { get; set; }
         public int[] conversationid { get; set; }
     }
@@ -165,7 +165,7 @@ namespace Magnus {
     public class RetrieveMessagesResult : Message
     {
         public new MsgType type = MsgType.RetrieveMessagesResult;
-        public int[] userid { get; set; }
+        public string[] userid { get; set; }
         public string[] email { get; set; }
         public string[] text { get; set; }
         public string[] datetime { get; set; } //temp string as that is how the database function returns it but should probably convert
@@ -180,7 +180,7 @@ namespace Magnus {
     public class RetrieveUserProfileResult : Message
     {
         public new MsgType type = MsgType.RetrieveUserProfileResult;
-        public int userid { get; set; }
+        public string userid { get; set; }
         public string email { get; set; }
         public string name { get; set; }
         public string bio { get; set; }
@@ -199,8 +199,8 @@ namespace Magnus {
         public int matchid { get; set; }
         public string email_1 { get; set; }
         public string email_2 { get; set; }
-        public int userid_1 { get; set; }
-        public int userid_2 { get; set; }
+        public string userid_1 { get; set; }
+        public string userid_2 { get; set; }
         public string board { get; set; }
         public string start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
         public bool ended { get; set; }
@@ -230,7 +230,7 @@ namespace Magnus {
     public class GetMatchHistoryResult : Message
     {
         public new MsgType type = MsgType.GetMatchHistoryResult;
-        public int[] userid { get; set; }
+        public string[] userid { get; set; }
         public string[] email { get; set; }
         public int[] matchid { get; set; }
         public string[] board { get; set; }
@@ -284,7 +284,7 @@ namespace Magnus {
         LoginResult = 25,
 
         EnterMatchQueue = 26,	//not sure how we are handling this
-        MatchFound = 27,	//not sure how we are handling this
+        MatchFound = 27,	    //not sure how we are handling this
         SendChallenge = 28,
 
 
