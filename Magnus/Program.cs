@@ -1,5 +1,6 @@
 ﻿using DatabaseConnection;
 using System;
+using static Magnus.MessageResult;
 using Msg = Include.Json.Message;
 
 namespace Magnus {
@@ -31,6 +32,8 @@ namespace Magnus {
                         server.SendToClient(clientId, new LoginResult()
                         {
                             result = Result.Success,
+                            email = result.Item1,
+                            uniqueId = result.Item1,
                             userName = result.Item3,
                             bio = result.Item4
                             //profile = result.Item5 // < this is a file directory, convert this into bytes and then send it
