@@ -102,7 +102,6 @@ namespace Magnus {
 
     public class AcceptFriendResult : MessageResult {
         public new MsgType type = MsgType.AcceptFriendResult;
-        public Result success { get; set; }
         public string conversationId { get; set; }
     }
 
