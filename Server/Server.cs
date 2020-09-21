@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using static Include.Client;
+using static Magnus.MessageResult;
 using NetJ = Include.Json;
 using SocketType = Include.SocketType;
 
@@ -147,7 +148,7 @@ namespace Magnus {
                         err = "client with same id was removed to connect this one";
                     } else {
                         Log.D($"Server: failed to remove client({client.id})");
-                        client.Send(new InitialiseResult() { result = Result.Failure, error = "server failed to remove old client with same name" });
+                        client.Send(new MessageResult() { callingType = MsgType.Initialise, result = Result.Failure, error = "server failed to remove old client with same name" });
                     }
                 }
                 if (clients.TryAdd(client.id, client)) {
@@ -158,11 +159,11 @@ namespace Magnus {
                         OnReceiveListener?.Invoke(client.id, type, protocol, data);
                     };
                     client.OnDisconnectListener += () => { DisconnectClient(client.id); };
-                    client.Send(new InitialiseResult() { result = Result.Success, error = err });
+                    client.Send(new MessageResult() {callingType = MsgType.Initialise , result = Result.Success, error = err });
 
                 } else {
                     Log.D($"Server: failed to add client({client.id})");
-                    client.Send(new InitialiseResult() { result = Result.Failure, error = "server failed to add client" });
+                    client.Send(new MessageResult() { callingType = MsgType.Initialise, result = Result.Failure, error = "server failed to add client" });
                 }
             }
         }

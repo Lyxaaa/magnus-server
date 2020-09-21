@@ -30,12 +30,6 @@ namespace Magnus {
         public string id { get; set; }
     }
 
-    public class InitialiseResult : MessageResult {
-        public new MsgType type = MsgType.InitialiseResult;
-        public Result result { get; set; }
-        public string error { get; set; }
-    }
-
     public class Login : Message {
         public new MsgType type = MsgType.Login;
         public string email { get; set; }
@@ -88,28 +82,28 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.UpdateUserPassword;
         public string email { get; set; }
-        public string oldpassword { get; set; }
-        public string newoassword { get; set; }
+        public string oldPassword { get; set; }
+        public string newPassword { get; set; }
     }
 
     public class SendFriendRequest : Message
     {
         public new MsgType type = MsgType.SendFriendRequest;
-        public string fromemail { get; set; }
-        public string toemail { get; set; }
+        public string fromEmail { get; set; }
+        public string toEmail { get; set; }
     }
 
     public class AcceptFriend : Message
     {
         public new MsgType type = MsgType.AcceptFriend;
-        public string fromemail { get; set; }
-        public string toemail { get; set; }
+        public string fromEmail { get; set; }
+        public string toEmail { get; set; }
     }
-    public class AcceptFriendResult : MessageResult
-    {
+
+    public class AcceptFriendResult : MessageResult {
         public new MsgType type = MsgType.AcceptFriendResult;
         public Result success { get; set; }
-        public string conversationid { get; set; }
+        public string conversationId { get; set; }
     }
 
     public class GetMyFriendRequests : Message
@@ -118,8 +112,7 @@ namespace Magnus {
         public string email { get; set; }
     }
 
-    public class GetMyFriendRequestsResult : Message
-    {
+    public class GetMyFriendRequestsResult : MessageResult {
         public new MsgType type = MsgType.GetMyFriendRequestsResult;
         public string[] name { get; set; }
         public string[] userid { get; set; }
@@ -132,8 +125,7 @@ namespace Magnus {
         public string email { get; set; }
     }
 
-    public class GetFriendsRequestingMeResult : Message
-    {
+    public class GetFriendsRequestingMeResult : MessageResult {
         public new MsgType type = MsgType.GetFriendsRequestingMeResult;
         public string[] name { get; set; }
         public string[] userid { get; set; }
@@ -146,8 +138,7 @@ namespace Magnus {
         public string email { get; set; }
     }
 
-    public class GetFriendsResult : Message
-    {
+    public class GetFriendsResult : MessageResult {
         public new MsgType type = MsgType.GetFriendsResult;
         public string[] name { get; set; }
         public string[] userid { get; set; }
@@ -170,8 +161,7 @@ namespace Magnus {
         public string datetime { get; set; }
     }
 
-    public class RetrieveMessagesResult : Message
-    {
+    public class RetrieveMessagesResult : MessageResult {
         public new MsgType type = MsgType.RetrieveMessagesResult;
         public Chat[] chat { get; set; }
     }
@@ -183,16 +173,13 @@ namespace Magnus {
         public Int64 dateTime { get; set; }
     }
 
-    
-
     public class RetrieveUserProfile : Message
     {
         public new MsgType type = MsgType.RetrieveUserProfile;
         public string email { get; set; }
     }
 
-    public class RetrieveUserProfileResult : Message
-    {
+    public class RetrieveUserProfileResult : MessageResult {
         public new MsgType type = MsgType.RetrieveUserProfileResult;
         public string userid { get; set; }
         public string email { get; set; }
@@ -207,8 +194,7 @@ namespace Magnus {
         public string matchid { get; set; }
     }
 
-    public class GetMatchDetailsResult : Message
-    {
+    public class GetMatchDetailsResult : MessageResult {
         public new MsgType type = MsgType.GetMatchDetailsResult;
         public string matchid { get; set; }
         public string email_1 { get; set; }
@@ -227,10 +213,9 @@ namespace Magnus {
         public string email_2 { get; set; }
     }
 
-    public class CreateMatchResult : Message
+    public class CreateMatchResult : MessageResult
     {
         public new MsgType type = MsgType.CreateMatchResult;
-        public Result success { get; set; }
         public string matchid { get; set; }
         public string conversationid { get; set; }
     }
