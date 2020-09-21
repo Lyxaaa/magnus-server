@@ -1,4 +1,5 @@
 ﻿using Include;
+using System;
 using System.Collections.Generic;
 using I = Include.Json;
 
@@ -29,7 +30,7 @@ namespace Magnus {
         public string id { get; set; }
     }
 
-    public class InitialiseResult : Message {
+    public class InitialiseResult : MessageResult {
         public new MsgType type = MsgType.InitialiseResult;
         public Result result { get; set; }
         public string error { get; set; }
@@ -41,21 +42,28 @@ namespace Magnus {
         public string password { get; set; }
     }
 
-    public class LoginResult : Message {
+    public class LoginResult : MessageResult {
         public new MsgType type = MsgType.LoginResult;
-        public Result result { get; set; }
-        public string error { get; set; }
+        public string email { get; set; }
         public string userName { get; set; }
         public string uniqueId { get; set; }
         public string bio { get; set; }
         public byte[] profile { get; set; }
     }
 
-    public class GenericResponse : Message
+    public class MessageResult : Message
     {
-        public new MsgType type = MsgType.GenericResponse;
-        public MsgType acknowledging;
-        public bool success { get; set; }
+        public MsgType callingType { get; set; }
+        public Result result { get; set; }
+        public string error { get; set; }
+
+        public enum Result
+        {
+            Invalid = -1,
+            Success = 0,
+            Pending = 1,
+            Failure = 3
+        }
     }
 
     public class RegisterUser : Message
@@ -97,11 +105,11 @@ namespace Magnus {
         public string fromemail { get; set; }
         public string toemail { get; set; }
     }
-    public class AcceptFriendResult : Message
+    public class AcceptFriendResult : MessageResult
     {
         public new MsgType type = MsgType.AcceptFriendResult;
-        public bool success { get; set; }
-        public int conversationid { get; set; }
+        public Result success { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class GetMyFriendRequests : Message
@@ -144,7 +152,7 @@ namespace Magnus {
         public string[] name { get; set; }
         public string[] userid { get; set; }
         public string[] email { get; set; }
-        public int[] conversationid { get; set; }
+        public string[] conversationid { get; set; }
     }
 
     public class SendMessage : Message
@@ -152,24 +160,30 @@ namespace Magnus {
         public new MsgType type = MsgType.SendMessage;
         public string email { get; set; }
         public string text { get; set; }
-        public int conversationid { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class RetrieveMessages : Message
     {
         public new MsgType type = MsgType.RetrieveMessages;
-        public int conversationid { get; set; }
+        public string conversationid { get; set; }
         public string datetime { get; set; }
     }
 
     public class RetrieveMessagesResult : Message
     {
         public new MsgType type = MsgType.RetrieveMessagesResult;
-        public string[] userid { get; set; }
-        public string[] email { get; set; }
-        public string[] text { get; set; }
-        public string[] datetime { get; set; } //temp string as that is how the database function returns it but should probably convert
+        public Chat[] chat { get; set; }
     }
+
+    public class Chat {
+        public string userid { get; set; }
+        public string email { get; set; }
+        public string text { get; set; }
+        public Int64 dateTime { get; set; }
+    }
+
+    
 
     public class RetrieveUserProfile : Message
     {
@@ -190,20 +204,20 @@ namespace Magnus {
     public class GetMatchDetails : Message
     {
         public new MsgType type = MsgType.GetMatchDetails;
-        public int matchid { get; set; }
+        public string matchid { get; set; }
     }
 
     public class GetMatchDetailsResult : Message
     {
         public new MsgType type = MsgType.GetMatchDetailsResult;
-        public int matchid { get; set; }
+        public string matchid { get; set; }
         public string email_1 { get; set; }
         public string email_2 { get; set; }
         public string userid_1 { get; set; }
         public string userid_2 { get; set; }
         public string board { get; set; }
-        public string start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
-        public bool ended { get; set; }
+        public Int64 dateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
+        public string ended { get; set; }
     }
 
     public class CreateMatch : Message
@@ -216,9 +230,9 @@ namespace Magnus {
     public class CreateMatchResult : Message
     {
         public new MsgType type = MsgType.CreateMatchResult;
-        public bool success { get; set; }
-        public int matchid { get; set; }
-        public int conversationid { get; set; }
+        public Result success { get; set; }
+        public string matchid { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class GetMatchHistory : Message
@@ -232,15 +246,12 @@ namespace Magnus {
         public new MsgType type = MsgType.GetMatchHistoryResult;
         public string[] userid { get; set; }
         public string[] email { get; set; }
-        public int[] matchid { get; set; }
+        public string[] matchid { get; set; }
         public string[] board { get; set; }
         public string[] start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
         public bool[] ended { get; set; }
     }
 
-    public enum Result : int {
-        Success = 0, Pending = 1, Failure = 2
-    }
 
     public enum MsgType : int {
         Ack = 0,
@@ -251,7 +262,7 @@ namespace Magnus {
         InitialiseResult = 4,	//not sure how we are handling this
 
         RegisterUser = 5,
-        GenericResponse = 6,
+        MessageResult = 6,
 
         UpdateUserProfile = 7,
         UpdateUserPassword = 8,
@@ -283,8 +294,8 @@ namespace Magnus {
         Login = 25,
         LoginResult = 26,
 
-        EnterMatchQueue = 27,	//not sure how we are handling this
-        MatchFound = 28,	    //not sure how we are handling this
+        EnterMatchQueue = 27,	
+        MatchFound = 28,	   
         SendChallenge = 29,
 
         CreateMatch = 30,
