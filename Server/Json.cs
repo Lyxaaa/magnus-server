@@ -55,7 +55,7 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.GenericResponse;
         public MsgType acknowledging;
-        public bool success { get; set; }
+        public Result success { get; set; }
     }
 
     public class RegisterUser : Message
@@ -100,8 +100,8 @@ namespace Magnus {
     public class AcceptFriendResult : Message
     {
         public new MsgType type = MsgType.AcceptFriendResult;
-        public bool success { get; set; }
-        public int conversationid { get; set; }
+        public Result success { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class GetMyFriendRequests : Message
@@ -144,7 +144,7 @@ namespace Magnus {
         public string[] name { get; set; }
         public string[] userid { get; set; }
         public string[] email { get; set; }
-        public int[] conversationid { get; set; }
+        public string[] conversationid { get; set; }
     }
 
     public class SendMessage : Message
@@ -152,13 +152,13 @@ namespace Magnus {
         public new MsgType type = MsgType.SendMessage;
         public string email { get; set; }
         public string text { get; set; }
-        public int conversationid { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class RetrieveMessages : Message
     {
         public new MsgType type = MsgType.RetrieveMessages;
-        public int conversationid { get; set; }
+        public string conversationid { get; set; }
         public string datetime { get; set; }
     }
 
@@ -196,7 +196,7 @@ namespace Magnus {
     public class GetMatchDetailsResult : Message
     {
         public new MsgType type = MsgType.GetMatchDetailsResult;
-        public int matchid { get; set; }
+        public string matchid { get; set; }
         public string email_1 { get; set; }
         public string email_2 { get; set; }
         public string userid_1 { get; set; }
@@ -216,9 +216,9 @@ namespace Magnus {
     public class CreateMatchResult : Message
     {
         public new MsgType type = MsgType.CreateMatchResult;
-        public bool success { get; set; }
-        public int matchid { get; set; }
-        public int conversationid { get; set; }
+        public Result success { get; set; }
+        public string matchid { get; set; }
+        public string conversationid { get; set; }
     }
 
     public class GetMatchHistory : Message
@@ -232,7 +232,7 @@ namespace Magnus {
         public new MsgType type = MsgType.GetMatchHistoryResult;
         public string[] userid { get; set; }
         public string[] email { get; set; }
-        public int[] matchid { get; set; }
+        public string[] matchid { get; set; }
         public string[] board { get; set; }
         public string[] start_DateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
         public bool[] ended { get; set; }
@@ -283,8 +283,8 @@ namespace Magnus {
         Login = 25,
         LoginResult = 26,
 
-        EnterMatchQueue = 27,	//not sure how we are handling this
-        MatchFound = 28,	    //not sure how we are handling this
+        EnterMatchQueue = 27,	
+        MatchFound = 28,	   
         SendChallenge = 29,
 
         CreateMatch = 30,
