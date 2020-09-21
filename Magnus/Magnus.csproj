@@ -39,7 +39,8 @@
     <Reference Include="Include.Util">
       <HintPath>..\references\Include.Util.dll</HintPath>
     </Reference>
-    <Reference Include="Networking">
+    <Reference Include="Networking, Version=20.9.14.537, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\references\Networking.dll</HintPath>
     </Reference>
     <Reference Include="System" />
