@@ -126,9 +126,9 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string,string>> GetUserRequestSent(string UserEmail)
+        public List<Tuple<string,string,string>> GetUserRequestSent(string UserEmail)
         {
-            var myReturn = new List<Tuple<string,string>>();
+            var myReturn = new List<Tuple<string,string,string>>();
             if (dbCon.IsConnect())
             {
                 string query = "SELECT Reciver, DateTime FROM friend_request WHERE Sender  = '" + UserEmail + "' AND users.Email = friend_request.Reciver";
@@ -137,7 +137,7 @@ namespace DatabaseConnection
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1)));
+                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1), reader.GetString(2)));
                 }
 
                 reader.Close();
