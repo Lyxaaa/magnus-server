@@ -233,13 +233,13 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetMyFriendRequests, out GetMyFriendRequests getmyfriendrequests))
                 {
                     var result = database.GetUserRequestSent(getmyfriendrequests.email);
-                    if (result)
+                    if (false)
                     {
                         server.SendToClient(clientId, new AcceptFriendResult()
                         {
                             result = Result.Success,
                             callingType = MsgType.AcceptFriend,
-                            conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
+                            //conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
                         });
                     }
                     else
