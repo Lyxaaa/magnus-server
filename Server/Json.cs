@@ -241,7 +241,7 @@ namespace Magnus {
         Ack = 0,
         Heartbeat = 1,
 
-        Disconnect = 2, 
+        Disconnect = 2,   
         Initialise = 3,		
         InitialiseResult = 4,	
 

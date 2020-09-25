@@ -131,7 +131,7 @@ namespace DatabaseConnection
             var myReturn = new List<Tuple<string,string>>();
             if (dbCon.IsConnect())
             {
-                string query = "SELECT Reciver, DateTime FROM friend_request WHERE Sender  = '" + UserEmail + "'";
+                string query = "SELECT Reciver, DateTime FROM friend_request WHERE Sender  = '" + UserEmail + "' AND users.Email = friend_request.Reciver";
                 Console.WriteLine(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();

@@ -86,15 +86,18 @@ namespace Magnus {
                     var result = database.InsertUser(registeruser.email, registeruser.password, registeruser.name, registeruser.bio, "Profile pic placeholder");
                     if (result)
                     {
-                        server.SendToClient(clientId, new MessageResult()
+                        server.SendToClient(clientId, new LoginResult()
                         {
                             result = Result.Success,
-                            callingType = MsgType.RegisterUser
+                            email = registeruser.email,
+                            uniqueId = HashString(registeruser.email),
+                            userName = registeruser.name,
+                            bio = registeruser.bio
                         });
                     }
                     else
                     {
-                        server.SendToClient(clientId, new MessageResult()
+                        server.SendToClient(clientId, new LoginResult()
                         {
                             result = Result.Failure,
                             error = "insert failed see database log for details",
@@ -200,7 +203,77 @@ namespace Magnus {
                 }
 
                 #endregion
+
+                #region AcceptFriend
+                else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptFriend, out AcceptFriend acceptfriend))
+                {
+                    var result = database.InsertFriend(acceptfriend.fromEmail, acceptfriend.toEmail);
+                    var id = database.GetConversationsBetween(acceptfriend.fromEmail, acceptfriend.toEmail);
+                    if (result)
+                    {
+                        server.SendToClient(clientId, new AcceptFriendResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.AcceptFriend,
+                            conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new AcceptFriendResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.AcceptFriend
+                        });
+                    }
+                }
+
+                #endregion GetMyFriendRequests
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetMyFriendRequests, out GetMyFriendRequests getmyfriendrequests))
+                {
+                    var result = database.GetUserRequestSent(getmyfriendrequests.email);
+                    if (result)
+                    {
+                        server.SendToClient(clientId, new AcceptFriendResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.AcceptFriend,
+                            conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new AcceptFriendResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.AcceptFriend
+                        });
+                    }
+                }
+                #region
+                #endregion
+                #region
+                #endregion
+                #region
+                #endregion
+                #region
+                #endregion
+                #region
+                #endregion
+                else
+                {
+                    server.SendToClient(clientId, new MessageResult()
+                    {
+                        result = Result.Invalid,
+                        error = "error or listener not implamanted ",
+                        callingType = MsgType.SendFriendRequest
+                    });
+                }
                 };
+
+                
 
             server.Begin();
             
