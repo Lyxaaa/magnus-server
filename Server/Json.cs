@@ -56,7 +56,7 @@ namespace Magnus {
             Invalid = -1,
             Success = 0,
             Pending = 1,
-            Failure = 3
+            Failure = 2
         }
     }
 
