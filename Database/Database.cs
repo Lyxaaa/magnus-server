@@ -97,28 +97,28 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string>> GetUserFriends(string UserEmail)
+        public List<Tuple<string, string>> GetUserFriends(string UserEmail)
         {
-            var myReturn = new List<Tuple<string>>();
+            var myReturn = new List<Tuple<string,string>>();
             if (dbCon.IsConnect())
             {                
-                string query = "SELECT Email_1 FROM friends WHERE Email_2  = '" + UserEmail + "'";
+                string query = "SELECT Email_1, Name FROM friends, users WHERE Email_2  = '" + UserEmail + "' AND users.Email = friends.Email_1";
                 Console.WriteLine(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0)));
+                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1)));
                 }
 
                 reader.Close();
-                string query2 = "SELECT Email_2 FROM friends WHERE Email_1  = '" + UserEmail + "'";
+                string query2 = "SELECT Email_2, Name FROM friends, users WHERE Email_1  = '" + UserEmail + "' AND users.Email = friends.Email_2";
                 Console.WriteLine(query2);
                 var cmd2 = new MySqlCommand(query2, dbCon.Connection);
                 var reader2 = cmd2.ExecuteReader();
                 while (reader2.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader2.GetString(0)));
+                    myReturn.Add(Tuple.Create(reader2.GetString(0), reader.GetString(1)));
                 }
 
                 reader2.Close();
@@ -131,7 +131,7 @@ namespace DatabaseConnection
             var myReturn = new List<Tuple<string,string,string>>();
             if (dbCon.IsConnect())
             {
-                string query = "SELECT Reciver, DateTime FROM friend_request WHERE Sender  = '" + UserEmail + "' AND users.Email = friend_request.Reciver";
+                string query = "SELECT Reciver, DateTime, Name FROM friend_request, users WHERE Sender  = '" + UserEmail + "' AND users.Email = friend_request.Reciver";
                 Console.WriteLine(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
@@ -145,18 +145,18 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string, string>> GetUserRequestRecived(string UserEmail)
+        public List<Tuple<string, string, String>> GetUserRequestRecived(string UserEmail)
         {
-            var myReturn = new List<Tuple<string, string>>();
+            var myReturn = new List<Tuple<string, string, String>>();
             if (dbCon.IsConnect())
             {
-                string query = "SELECT Sender, DateTime FROM friend_request WHERE Reciver  = '" + UserEmail + "'";
+                string query = "SELECT Sender, DateTime, Name FROM friend_request, users WHERE Reciver  = '" + UserEmail + "' AND users.Email = friend_request.Sender";
                 Console.WriteLine(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1)));
+                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1), reader.GetString(2)));
                 }
 
                 reader.Close();
@@ -202,18 +202,18 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string>> GetConversationsBetween(string Email_1, string Email_2)
+        public string GetConversationsBetween(string Email_1, string Email_2)
         {
-            var myReturn = new List<Tuple<string>>();
+            var myReturn = "invalid";
             if (dbCon.IsConnect())
             {
-                string query = "SELECT Conversation_ID FROM in_conversation WHERE Email = '"+Email_1+ "' AND Conversation_ID IN (SELECT Conversation_ID FROM in_conversation WHERE Email = '" + Email_2 + "')";
+                string query = "SELECT top 1 Conversation_ID FROM in_conversation WHERE Email = '"+Email_1+ "' AND Conversation_ID IN (SELECT Conversation_ID FROM in_conversation WHERE Email = '" + Email_2 + "')";
                 Console.WriteLine(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0)));
+                    myReturn = reader.GetString(0);
                 }
 
                 reader.Close();

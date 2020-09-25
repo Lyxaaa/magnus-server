@@ -203,7 +203,6 @@ namespace Magnus {
                 }
 
                 #endregion
-
                 #region AcceptFriend
                 else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptFriend, out AcceptFriend acceptfriend))
                 {
@@ -215,7 +214,7 @@ namespace Magnus {
                         {
                             result = Result.Success,
                             callingType = MsgType.AcceptFriend,
-                            conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
+                            conversationId = id
                         });
                     }
                     else
@@ -230,34 +229,219 @@ namespace Magnus {
                 }
 
                 #endregion GetMyFriendRequests
+                #region GetMyFriendRequests
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetMyFriendRequests, out GetMyFriendRequests getmyfriendrequests))
                 {
                     var result = database.GetUserRequestSent(getmyfriendrequests.email);
-                    if (false)
+                    if (result.Count>=1)
                     {
-                        server.SendToClient(clientId, new AcceptFriendResult()
+                        var returnemail = new List<String>();
+                        var returnname = new List<String>();
+                        var returnuserid = new List<String>();
+                        for (int i = 1; i < result.Count; i++) {
+                            returnemail.Add(result[i].Item1);
+                            returnname.Add(result[i].Item3);
+                            returnuserid.Add(HashString(result[i].Item1));
+                        }
+                        server.SendToClient(clientId, new GetMyFriendRequestsResult()
                         {
                             result = Result.Success,
-                            callingType = MsgType.AcceptFriend,
-                            //conversationId = id[1].Item1 //assuming only 1 conversation between 2 users
+                            callingType = MsgType.GetMyFriendRequests,
+                            email = returnemail.ToArray(),
+                            userId = returnuserid.ToArray(),
+                            name = returnname.ToArray()
+
+                        });
+                    }
+                    else if (result.Count == 0)
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.GetMyFriendRequests
                         });
                     }
                     else
                     {
-                        server.SendToClient(clientId, new AcceptFriendResult()
+                        server.SendToClient(clientId, new GetMyFriendRequestsResult()
                         {
                             result = Result.Failure,
                             error = "friend request failed see database log for details",
-                            callingType = MsgType.AcceptFriend
+                            callingType = MsgType.GetMyFriendRequests
                         });
                     }
                 }
-                #region
                 #endregion
-                #region
+                #region GetFriendsRequestingMe
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriendsRequestingMe, out GetFriendsRequestingMe getfriendsrequestingme))
+                {
+                    var result = database.GetUserRequestRecived(getfriendsrequestingme.email);
+                    if (result.Count >= 1)
+                    {
+                        var returnemail = new List<String>();
+                        var returnname = new List<String>();
+                        var returnuserid = new List<String>();
+                        for (int i = 1; i < result.Count; i++)
+                        {
+                            returnemail.Add(result[i].Item1);
+                            returnname.Add(result[i].Item3);
+                            returnuserid.Add(HashString(result[i].Item1));
+                        }
+                        server.SendToClient(clientId, new GetFriendsRequestingMeResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.GetFriendsRequestingMe,
+                            email = returnemail.ToArray(),
+                            userId = returnuserid.ToArray(),
+                            name = returnname.ToArray()
+
+                        });
+                    }
+                    else if (result.Count == 0)
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.GetFriendsRequestingMe
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new GetFriendsRequestingMeResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.GetFriendsRequestingMe
+                        });
+                    }
+                }
                 #endregion
-                #region
+                #region GetFriends
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriends, out GetFriends getfriends))
+                {
+                    var result = database.GetUserFriends(getfriends.email);
+                    if (result.Count >= 1)
+                    {
+                        var returnemail = new List<String>();
+                        var returnname = new List<String>();
+                        var returnuserid = new List<String>();
+                        var returnconversationid = new List<String>();
+                        for (int i = 1; i < result.Count; i++)
+                        {
+                            returnemail.Add(result[i].Item1);
+                            returnname.Add(result[i].Item2);
+                            returnuserid.Add(HashString(result[i].Item1));
+                            //this will be removed lates and is a temporary way to get conversation ID
+                            returnconversationid.Add(database.GetConversationsBetween(getfriends.email, (result[i].Item1)));
+                        }
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.GetFriends,
+                            email = returnemail.ToArray(),
+                            userId = returnuserid.ToArray(),
+                            name = returnname.ToArray(),
+                            conversationId = returnconversationid.ToArray()
+
+                        });
+                    }
+                    else if (result.Count == 0) {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.GetFriends
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.GetFriends
+                        });
+                    }
+                }
                 #endregion
+                #region SendMessage
+                else if (Msg.TryCast(dataType, data, (int)MsgType.SendMessage, out SendMessage sendmessage))
+                {
+                    var result = database.InsertMessage(sendmessage.conversationId, sendmessage.email, sendmessage.text);
+                    if (result)
+                    {
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.SendMessage
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.SendMessage
+                        });
+                    }
+                }
+                #endregion
+                #region RetrieveMessages
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriends, out RetrieveMessages retrievemessages))
+                {
+                    var result = database.GetMessages(retrievemessages.conversationId);
+                    if (result.Count >= 1)
+                    {
+                        var returnchat = new List<Chat>();
+                        var numberorerror = 0;
+                        for (int i = 1; i < result.Count; i++)
+                        {
+                            try {
+                                returnchat.Add(new Chat() {
+                                    text = result[i].Item1,
+                                    dateTime = long.Parse(result[i].Item2),
+                                    email = result[i].Item3,
+                                    userId = HashString(result[i].Item3)
+
+                                });
+                            }
+                            catch (Exception e) {
+                                numberorerror++;
+                            }
+                        }
+                        server.SendToClient(clientId, new RetrieveMessagesResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.RetrieveMessages,
+                            chat = returnchat.ToArray(),
+                            error = numberorerror.ToString()
+
+                        });
+                    }
+                    else if (result.Count == 0)
+                    {
+                        server.SendToClient(clientId, new RetrieveMessagesResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.RetrieveMessages
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new RetrieveMessagesResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.RetrieveMessages
+                        });
+                    }
+                }
+                #endregion
+                
                 #region
                 #endregion
                 #region
