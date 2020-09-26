@@ -531,36 +531,49 @@ namespace DatabaseConnection
                 return false;
             }
         }
-        public Boolean InsertMatch(string Email_1, string Email_2)
+        public String InsertMatch(string Email_1, string Email_2)
         {
+            var myReturn = "";
             if (dbCon.IsConnect())
             {
                 try
                 {
                     //create the match
                     string query = "INSERT INTO matches (`Match_ID`) VALUES (NULL)";
+                    Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
-                    var result = cmd.ExecuteNonQuery();
-                    Console.WriteLine(result);
+                    var result = cmd.ExecuteNonQuery();    
+                    //get match ID
+                    var query3= "SELECT LAST_INSERT_ID() FROM matches";
+                    Log.D(query3);
+                    var cmd3 = new MySqlCommand(query3, dbCon.Connection);
+                    var result3 = cmd3.ExecuteNonQuery();
+                    var reader = cmd3.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        myReturn = reader.GetString(0);
+                    }
+
+                    reader.Close();
 
                     //add users to the match just created
                     string query2 = "INSERT INTO match_between (Match_ID, Email) VALUES (LAST_INSERT_ID(),'" + Email_2 + "'), (LAST_INSERT_ID(),'" + Email_1 + "')";
-                    Console.WriteLine(query2);
+                    Log.D(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
                     var result2 = cmd2.ExecuteNonQuery();
-                    if (result + result2 == 3) { return true; }
-                    else { return false; }
+                    if (result + result2 == 3) { return myReturn; }
+                    else { return ""; }
                 }
                 catch (Exception e)
                 {
                     Log.D("Database: shit went wrong");
                     Log.E(e.ToString());
-                    return false;
+                    return "";
                 }
             }
             else
             {
-                return false;
+                return "";
             }
         }
 
