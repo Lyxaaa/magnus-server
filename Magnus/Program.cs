@@ -390,7 +390,7 @@ namespace Magnus {
                 }
                 #endregion
                 #region RetrieveMessages
-                else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriends, out RetrieveMessages retrievemessages))
+                else if (Msg.TryCast(dataType, data, (int)MsgType.RetrieveMessages, out RetrieveMessages retrievemessages))
                 {
                     var result = database.GetMessages(retrievemessages.conversationId);
                     if (result.Count >= 1)
@@ -441,8 +441,35 @@ namespace Magnus {
                     }
                 }
                 #endregion
-                
-                #region
+                #region GetMatchDetails
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetMatchDetails, out GetMatchDetails getmatchdetails))
+                {
+                    var result = database.GetMatch(getmatchdetails.matchId);
+                    if (result.Item1 != getmatchdetails.matchId)
+                    {
+                        server.SendToClient(clientId, new GetMatchDetailsResult()
+                        {
+                            result = Result.Failure,
+                            error = "query match id did not match requested match id (possibly zero results)"
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new GetMatchDetailsResult()
+                        {
+                            result = Result.Success,
+                            dateTime = long.Parse(result.Item2),
+                            matchId = result.Item1,
+                            ended = result.Item3,
+                            board = result.Item4,
+                            userId_1 = HashString(result.Item5),
+                            email_1 = result.Item5,
+                            email_2 = result.Item6,
+                            userId_2 = HashString(result.Item6)
+
+                        });
+                    }
+                }
                 #endregion
                 #region
                 #endregion
@@ -460,7 +487,8 @@ namespace Magnus {
                 
 
             server.Begin();
-            
+
+
             Console.ReadKey();
             server.End();
         }

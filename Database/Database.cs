@@ -46,28 +46,28 @@ namespace DatabaseConnection
             return Tuple.Create(results[0], results[1], results[2], results[3], results[4]);
         }
 
-        public Tuple<string, string, string> GetMatch(string Match_ID)
+        public Tuple<string, string, string, string, string, string> GetMatch(string Match_ID)
         {
-            string[] results = { "", "", ""};
+            string[] results = { "", "", "", "", "", ""};
             if (dbCon.IsConnect())
             {
-                string query = "SELECT * FROM matches WHERE Match_ID  = '" + Match_ID + "'";
+                string query = "SELECT matches.Match_ID, Start_DateTime, Ended, Last_Board_State, U1.Email, U2.Email FROM matches, match_between AS U1, match_between AS U2 WHERE matches.Match_ID  = " + Match_ID + " AND matches.Match_ID = U1.Match_ID AND U2.Match_ID = matches.Match_ID AND U1.Email > U2.Email";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    for (int i = 0; i < 3; i++)
+                    for (int i = 0; i < 6; i++)
                     {
-                        if (!reader.IsDBNull(i+1))
+                        if (!reader.IsDBNull(i))
                         {
-                            results[i] = reader.GetString(i+1);
+                            results[i] = reader.GetString(i);
                         }
                     }
-                    Log.D("Database: Start:" + results[0] + ", Ended:" + results[1] + ", Last Board State:" + results[2]);
+                    Log.D("Database: Start:" + results[1] + ", Ended:" + results[2] + ", Last Board State:" + results[3] + ", Match ID:" + results[0] + ", User 1:" + results[4] + ", User 2:" + results[5]);
                 }
                 reader.Close();
             }
-            return Tuple.Create(results[0], results[1], results[2]);
+            return Tuple.Create(results[0], results[1], results[2], results[3], results[4], results[5]);
         }
 
         public List<Tuple<string, string, string, string, string>> GetAllOtherUserProfile(string UserEmail)
@@ -512,7 +512,7 @@ namespace DatabaseConnection
                 try
                 {
                     //insert the message
-                    string query = "INSERT INTO message (Text,Conversation_ID,Sender_Email) VALUES  ('" + text +"',"+ Conversation_ID + ",'"+ Email_Of_Sender + "')";
+                    string query = "INSERT INTO message (Text,Conversation_ID,Sender_Email,DateTime) VALUES  ('" + text +"',"+ Conversation_ID + ",'"+ Email_Of_Sender + "',"+ DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ")";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     var result = cmd.ExecuteNonQuery();
                     Console.WriteLine(result);
