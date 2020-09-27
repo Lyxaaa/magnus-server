@@ -16,6 +16,7 @@ namespace Magnus {
         static void Main(string[] args) {
             var database = new Database();
             var server = new Server(null, 2457);
+            var playqueue = new List<Tuple<string, string>>();//cliantid, email
 
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
@@ -233,12 +234,13 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetMyFriendRequests, out GetMyFriendRequests getmyfriendrequests))
                 {
                     var result = database.GetUserRequestSent(getmyfriendrequests.email);
-                    if (result.Count>=1)
+                    if (result.Count >= 1)
                     {
                         var returnemail = new List<String>();
                         var returnname = new List<String>();
                         var returnuserid = new List<String>();
-                        for (int i = 1; i < result.Count; i++) {
+                        for (int i = 1; i < result.Count; i++)
+                        {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item3);
                             returnuserid.Add(HashString(result[i].Item1));
@@ -347,7 +349,8 @@ namespace Magnus {
 
                         });
                     }
-                    else if (result.Count == 0) {
+                    else if (result.Count == 0)
+                    {
                         server.SendToClient(clientId, new GetFriendsResult()
                         {
                             result = Result.Failure,
@@ -399,8 +402,10 @@ namespace Magnus {
                         var numberorerror = 0;
                         for (int i = 1; i < result.Count; i++)
                         {
-                            try {
-                                returnchat.Add(new Chat() {
+                            try
+                            {
+                                returnchat.Add(new Chat()
+                                {
                                     text = result[i].Item1,
                                     dateTime = long.Parse(result[i].Item2),
                                     email = result[i].Item3,
@@ -408,7 +413,8 @@ namespace Magnus {
 
                                 });
                             }
-                            catch (Exception e) {
+                            catch (Exception e)
+                            {
                                 numberorerror++;
                             }
                         }
@@ -471,7 +477,166 @@ namespace Magnus {
                     }
                 }
                 #endregion
-                #region
+                //do we need to send message to both cliants and if so do we need additional fields on the message to include cliant id or alter the database?
+                #region CreateMatch 
+                else if (Msg.TryCast(dataType, data, (int)MsgType.CreateMatch, out CreateMatch creatematch))
+                {
+                    var result = database.InsertMatch(creatematch.email_1, creatematch.email_2);
+                    //get conversation ID or create if non exist
+                    var coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                    if (coversation == "invalid")
+                    {
+                        database.InsertConversation(creatematch.email_1, creatematch.email_2);
+                        coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                    }
+                    if (!String.IsNullOrEmpty(result))
+                    {
+                        server.SendToClient(clientId, new CreateMatchResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.CreateMatch,
+                            matchId = result,
+                            conversationId = coversation
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new CreateMatchResult()
+                        {
+                            result = Result.Failure,
+                            error = "match request failed see database log for details",
+                            callingType = MsgType.CreateMatch
+                        });
+                    }
+                }
+                #endregion 
+                #region GetMatchHistory
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetMatchHistory, out GetMatchHistory getmatchhistory))
+                {
+                    var result = database.GetUserMatchHistory(getmatchhistory.email_1);
+                    if (result.Count >= 1)
+                    {
+                        var returnemail = new List<String>();
+                        var returnuserid = new List<String>();
+                        var returnmatchid = new List<String>();
+                        var returnboard = new List<String>();
+                        var returnended = new List<bool>();
+                        var returnstartdate = new List<Int64>();
+                        for (int i = 1; i < result.Count; i++)
+                        {
+                            returnemail.Add(result[i].Item3);
+                            returnuserid.Add(HashString(result[i].Item3));
+                            returnmatchid.Add(result[i].Item2);
+                            returnstartdate.Add(long.Parse(result[i].Item1));
+                            returnboard.Add(result[i].Item5);
+                        }
+                        server.SendToClient(clientId, new GetMatchHistoryResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.GetMatchHistory,
+                            email = returnemail.ToArray(),
+                            userId = returnuserid.ToArray(),
+                            board = returnboard.ToArray(),
+                            startDateTime = returnstartdate.ToArray(),
+                            ended = returnended.ToArray()
+
+                        });
+                    }
+                    else if (result.Count == 0)
+                    {
+                        server.SendToClient(clientId, new GetMatchHistoryResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.GetMatchHistory
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.GetFriends
+                        });
+                    }
+                }
+                #endregion
+                #region EnterMatchQueue
+                else if (Msg.TryCast(dataType, data, (int)MsgType.EnterMatchQueue, out EnterMatchQueue entermatchqueue))
+                {
+                    if (playqueue.Count >= 1)
+                    {
+                        var opponent = playqueue[1];
+                        playqueue.Remove(opponent);
+                        var result = database.InsertMatch(entermatchqueue.email, opponent.Item2);
+                        //get conversation ID or create if non exist
+                        var coversation = database.GetConversationsBetween(entermatchqueue.email, opponent.Item2);
+                        {
+                            database.InsertConversation(creatematch.email_1, creatematch.email_2);
+                            coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                        }
+                        if (!String.IsNullOrEmpty(result))
+                        {
+                            server.SendToClient(clientId, new MatchFound()
+                            {
+                                result = Result.Success,
+                                callingType = MsgType.EnterMatchQueue,
+                                matchId = result,
+                                conversationId = coversation,
+                                opponentemail = opponent.Item2,
+                                youremail = entermatchqueue.email
+                            });
+
+                            server.SendToClient(opponent.Item1, new MatchFound()
+                            {
+                                result = Result.Success,
+                                callingType = MsgType.EnterMatchQueue,
+                                matchId = result,
+                                conversationId = coversation,
+                                opponentemail = entermatchqueue.email,
+                                youremail = opponent.Item2
+                            });
+                        }
+                        else
+                        {
+                            server.SendToClient(opponent.Item1, new MatchFound()
+                            {
+                                result = Result.Failure,
+                                error = "something went wrong during matchmaking",
+                                callingType = MsgType.EnterMatchQueue
+                            });
+                        }
+                    }
+                    else
+                    {
+                        playqueue.Add(Tuple.Create(clientId, entermatchqueue.email));
+
+                        server.SendToClient(clientId, new MatchFound()
+                        {
+                            result = Result.Pending,
+                            error = "uou are in the queue",
+                            callingType = MsgType.EnterMatchQueue
+                        });
+                        server.SendToClient(clientId, new MatchFound()
+                        {
+                            result = Result.Pending,
+                            error = "uou are in the queue",
+                            callingType = MsgType.EnterMatchQueue
+                        });
+                    }
+                }
+                #endregion
+                #region SendChallenge
+                else if (Msg.TryCast(dataType, data, (int)MsgType.SendChallenge, out SendChallenge sendchallenge))
+                {
+                    server.SendToClient(clientId, new MessageResult()
+                    {
+                        result = Result.Invalid,
+                        error = "error or listener not implamanted ",
+                        callingType = MsgType.SendFriendRequest
+                    });
+                }
                 #endregion
                 else
                 {

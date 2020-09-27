@@ -232,10 +232,33 @@ namespace Magnus {
         public string[] email { get; set; }
         public string[] matchId { get; set; }
         public string[] board { get; set; }
-        public Int64[] startDateTime { get; set; } //temp string as that is how the database function returns it but should probably convert
+        public Int64[] startDateTime { get; set; }
         public bool[] ended { get; set; }
     }
 
+    //added 27/09
+    public class EnterMatchQueue : Message
+    {
+        public new MsgType type = MsgType.EnterMatchQueue;
+        public string email { get; set; }
+    }
+
+    public class MatchFound : MessageResult
+    {
+        public new MsgType type = MsgType.MatchFound;
+        public string youremail { get; set; }
+        public string opponentemail { get; set; }
+        public string matchId { get; set; }
+        public string conversationId { get; set; }
+    }
+
+    public class SendChallenge : MessageResult
+    {
+        public new MsgType type = MsgType.MatchFound;
+        public string youremail { get; set; }
+        public string opponentemail { get; set; }
+
+    }
 
     public enum MsgType : int {
         Ack = 0,
