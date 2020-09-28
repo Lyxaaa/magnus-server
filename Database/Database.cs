@@ -301,9 +301,15 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "Update users SET Password = '" + Password + "', Name = '" + Name + "', Bio = '" + Bio + "', Profile_Pic =  '" + Profile + "' WHERE Email = '"+ Email + "'";
+                    string query = "Update users SET Password = @Password, Name = @Name, Bio = @Bio, Profile_Pic = @Profile WHERE Email = @Email";
                     Console.WriteLine(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@Email", Email);
+                    cmd.Parameters.AddWithValue("@Password", Password);
+                    cmd.Parameters.AddWithValue("@Name", Name);
+                    cmd.Parameters.AddWithValue("@Bio", Bio);
+                    cmd.Parameters.AddWithValue("@Profile", Profile);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
                     else { return false; }
@@ -353,9 +359,12 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "Update in_conversation SET Display_Name = '" + NewName + "' WHERE Conversation_ID = " + Conversation_ID + " AND Email = '"+ Email + "'";
+                    string query = "Update in_conversation SET Display_Name = @NewName WHERE Conversation_ID = " + Conversation_ID + " AND Email = @Email";
                     Console.WriteLine(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@NewName", NewName);
+                    cmd.Parameters.AddWithValue("@Email", Email);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
                     else { return false; }
@@ -380,9 +389,12 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "DELETE FROM friends WHERE (Email_1 = '" + Email_1 + "' AND Email_2 = '" + Email_2 + "') OR(Email_1 = '" + Email_2 + "' AND Email_2 = '" + Email_1 + "') ";
+                    string query = "DELETE FROM friends WHERE (Email_1 = @Email_1 AND Email_2 = @Email_2) OR(Email_1 = @Email_2 AND Email_2 = @Email_1) ";
                     Console.WriteLine(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@Email_1", Email_1);
+                    cmd.Parameters.AddWithValue("@Email_2", Email_2);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
                     else { return false; }
@@ -409,8 +421,14 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "INSERT INTO users (Email, Password, Name, Bio, Profile_Pic) VALUES ('" + Email + "','" + Password + "','" + Name + "','" + Bio + "','" + Profile + "')";
+                    string query = "INSERT INTO users (Email, Password, Name, Bio, Profile_Pic) VALUES (@Email, @Password, @Name, @Bio, @Profile)";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@Email", Email);
+                    cmd.Parameters.AddWithValue("@Password", Password);
+                    cmd.Parameters.AddWithValue("@Name", Name);
+                    cmd.Parameters.AddWithValue("@Bio", Bio);
+                    cmd.Parameters.AddWithValue("@Profile", Profile);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
                     else { return false; }
@@ -433,8 +451,11 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "INSERT INTO friend_request (Sender, Reciver) VALUES ('" + FromEmail + "','" + ToEmail + "')";
+                    string query = "INSERT INTO friend_request (Sender, Reciver) VALUES (@FromEmail, @ToEmail)";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@FromEmail", FromEmail);
+                    cmd.Parameters.AddWithValue("@ToEmail", ToEmail);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
                     else { return false; }
@@ -459,14 +480,20 @@ namespace DatabaseConnection
                 try
                 {
                     //remove from friend request
-                    string query = "DELETE FROM friend_request WHERE Sender = ('" + RequestFromEmail + "' AND  Reciver ='" + AcceptedEmail + "') OR Sender = ('" + AcceptedEmail + "' AND  Reciver ='" + RequestFromEmail + "')";
+                    string query = "DELETE FROM friend_request WHERE (Sender = @RequestFromEmail AND  Reciver = @AcceptedEmail) OR (Sender = @AcceptedEmail AND  Reciver = @RequestFromEmail)";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@RequestFromEmail", RequestFromEmail);
+                    cmd.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     Console.WriteLine(result);
 
-                    string query2 = "INSERT INTO friends (Email_1, Email_2) VALUES ('" + RequestFromEmail + "','" + AcceptedEmail + "')";
+                    string query2 = "INSERT INTO friends (Email_1, Email_2) VALUES (@RequestFromEmail, @AcceptedEmail)";
                     Console.WriteLine(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
+                    cmd2.Parameters.AddWithValue("@RequestFromEmail", RequestFromEmail);
+                    cmd2.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
+                    cmd2.Prepare();
                     var result2 = cmd2.ExecuteNonQuery();
                     if (result2 == 1) { return true; }
                     else { return false; }
@@ -497,9 +524,12 @@ namespace DatabaseConnection
                     Console.WriteLine(result); 
 
                     //add users to the conversation just created
-                    string query2 = "INSERT INTO in_conversation (Display_Name, Conversation_ID, Email) VALUES ('test_Name',LAST_INSERT_ID(),'" + Email_2 + "'), ('test_Name',LAST_INSERT_ID(),'" + Email_1 + "')";
+                    string query2 = "INSERT INTO in_conversation (Display_Name, Conversation_ID, Email) VALUES ('unName',LAST_INSERT_ID(), @Email_2), ('unName',LAST_INSERT_ID(),@Email_1)";
                     Console.WriteLine(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
+                    cmd2.Parameters.AddWithValue("@Email_1", Email_1);
+                    cmd2.Parameters.AddWithValue("@Email_2", Email_2);
+                    cmd2.Prepare();
                     var result2 = cmd2.ExecuteNonQuery();
                     if (result + result2 == 3) { return true; }
                     else { return false; }
@@ -524,8 +554,11 @@ namespace DatabaseConnection
                 try
                 {
                     //insert the message
-                    string query = "INSERT INTO message (Text,Conversation_ID,Sender_Email,DateTime) VALUES  ('" + text +"',"+ Conversation_ID + ",'"+ Email_Of_Sender + "',"+ DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ")";
+                    string query = "INSERT INTO message (Text,Conversation_ID,Sender_Email,DateTime) VALUES  (@text," + Conversation_ID + ", @Email_Of_Sender," + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ")";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
+                    cmd.Parameters.AddWithValue("@Email_Of_Sender", Email_Of_Sender);
+                    cmd.Parameters.AddWithValue("@text", text);
+                    cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
                     Console.WriteLine(result);
                     if (result == 1) { return true; }
@@ -569,9 +602,12 @@ namespace DatabaseConnection
                     reader.Close();
 
                     //add users to the match just created
-                    string query2 = "INSERT INTO match_between (Match_ID, Email) VALUES (LAST_INSERT_ID(),'" + Email_2 + "'), (LAST_INSERT_ID(),'" + Email_1 + "')";
+                    string query2 = "INSERT INTO match_between (Match_ID, Email) VALUES (LAST_INSERT_ID(),@Email_1), (LAST_INSERT_ID(), @Email_2)";
                     Log.D(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
+                    cmd2.Parameters.AddWithValue("@Email_1", Email_1);
+                    cmd2.Parameters.AddWithValue("@Email_2", Email_2);
+                    cmd2.Prepare();
                     var result2 = cmd2.ExecuteNonQuery();
                     if (result + result2 == 3) { return myReturn; }
                     else { return ""; }
