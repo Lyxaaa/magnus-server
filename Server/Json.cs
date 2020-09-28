@@ -253,9 +253,18 @@ namespace Magnus {
         public string conversationId { get; set; }
     }
 
-    public class SendChallenge : MessageResult
+    public class SendChallenge : Message
     {
         public new MsgType type = MsgType.MatchFound;
+        public string youremail { get; set; }
+        public string opponentemail { get; set; }
+
+    }
+
+    public class AcceptChallenge : MessageResult
+    {
+        public new MsgType type = MsgType.AcceptChallenge;
+        public bool Accept { get; set; }
         public string youremail { get; set; }
         public string opponentemail { get; set; }
 
@@ -312,7 +321,7 @@ namespace Magnus {
 
         GetMatchHistory = 32,
         GetMatchHistoryResult = 33,
-        GenericResult = 34,
+        AcceptChallenge = 34,
 
         Unknown = int.MaxValue
     }
