@@ -1,6 +1,7 @@
 ﻿using Include;
 using Include.Util;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Timers;
@@ -126,6 +127,67 @@ namespace Magnus {
                         break;
                     case DataType.JSON:
                         msg = ((I.Message)data).message;
+                        break;
+                }
+                Log.D($"Client: got message from {clientId}: {msg}");
+            };
+        }
+    }
+
+    public class TestClient : Client {
+        public TestClient(string remoteAddress, int port) {
+            id = Guid.NewGuid().ToString();
+            OnReceiveListener += DebugListener(id);
+
+            tcp = new TCPSocket(remoteAddress, port);
+            tcp.OnReceiveListener += OnTCP;
+            tcp.OnSocketClosedListener += () => { OnDisconnectListener?.Invoke(); };
+            tcp.Begin();
+
+            Send(new Initialise() { id = id });
+        }
+
+        List<DataType> ignoredDataTypes = new List<DataType>();
+
+        public void FilterDataType(DataType type, bool ignore) {
+            if (ignore && !ignoredDataTypes.Contains(type)) {
+                ignoredDataTypes.Add(type);
+            } else if (!ignore && ignoredDataTypes.Contains(type)) {
+                ignoredDataTypes.Remove(type);
+            }
+        }
+
+        List<int> ignoredMessageTypes = new List<int>();
+
+        public void FilterMessageType(MsgType type, bool ignore) {
+            if(ignore && !ignoredMessageTypes.Contains((int)type)) {
+                ignoredMessageTypes.Add((int)type);
+            } else if(!ignore && ignoredMessageTypes.Contains((int)type)) {
+                ignoredMessageTypes.Remove((int)type);
+            }
+        }
+
+        OnReceive DebugListener(string clientId) {
+            return (type, protocol, data) => {
+                string msg = "No Message";
+
+                if (ignoredDataTypes.Contains(protocol)) return;
+
+                switch (protocol) {
+                    case DataType.Error:
+                        msg = (string)data;
+                        break;
+                    case DataType.Undefined:
+                        break;
+                    case DataType.Bytes:
+                        msg = BitConverter.ToString((byte[])data).Replace("-", "");
+                        break;
+                    case DataType.RawString:
+                        msg = (string)data;
+                        break;
+                    case DataType.JSON:
+                        msg = ((I.Message)data).message;
+                        if (ignoredMessageTypes.Contains(((I.Message)data).type)) return;
                         break;
                 }
                 Log.D($"Client: got message from {clientId}: {msg}");

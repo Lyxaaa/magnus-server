@@ -1,36 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Magnus;
+using System;
+using System.Threading;
 
 namespace Test {
     class Program {
         static void Main(string[] args) {
+            string ip = "192.168.1.42";
+            int port = 2457;
 
-            string email = "hewwoworld@uwu.com";
+            TestClient client = new TestClient(ip, port);
 
-            Console.WriteLine($"Input:  {email}");
-            Console.WriteLine($"Output: {HashString(email)}");
+            // filter only for jsons
+            client.FilterDataType(Include.DataType.Bytes, true);
+            client.FilterDataType(Include.DataType.Error, true);
+            client.FilterDataType(Include.DataType.RawString, true);
+            client.FilterDataType(Include.DataType.Undefined, true);
 
-        }
-        public static string HashString(string text) {
-            const string chars = "0123456789abcdefghijklmnopqrztuvABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            byte[] bytes = Encoding.UTF8.GetBytes(text);
+            // ignore the heartbeat and acks
+            client.FilterMessageType(MsgType.Heartbeat, true);
+            client.FilterMessageType(MsgType.Ack, true);
 
-            SHA256Managed hashstring = new SHA256Managed();
-            byte[] hash = hashstring.ComputeHash(bytes);
+            Thread.Sleep(1000);
 
-            char[] hash2 = new char[32];
+            client.Send(new Login() {email = "", password = "" });
 
-            // Note that here we are wasting bits of hash! 
-            // But it isn't really important, because hash.Length == 32
-            for (int i = 0; i < hash2.Length; i++) {
-                hash2[i] = chars[hash[i] % chars.Length];
-            }
-
-            return new string(hash2);
+            Thread.Sleep(1000);
+            
+            Console.ReadKey();
         }
     }
 }
