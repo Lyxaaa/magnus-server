@@ -17,14 +17,16 @@ namespace DatabaseConnection
         private DBConnection dbCon;
         private string dbName = "deco7381_build";
 
-        public Database() {
+        public Database()
+        {
             dbCon = DBConnection.Instance();
             dbCon.DatabaseName = dbName;
         }
-        
+
 
         //----------------------section for select SQL statements-------------------------------------
-        public Tuple<string, string, string, string, string> GetSelectUserProfile(string UserEmail) {
+        public Tuple<string, string, string, string, string> GetSelectUserProfile(string UserEmail)
+        {
             string[] results = { "", "", "", "", "" };
             if (dbCon.IsConnect())
             {
@@ -35,7 +37,8 @@ namespace DatabaseConnection
                 var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < 5; i++)
+                    {
                         if (!reader.IsDBNull(i))
                         {
                             results[i] = reader.GetString(i);
@@ -50,7 +53,7 @@ namespace DatabaseConnection
 
         public Tuple<string, string, string, string, string, string> GetMatch(string Match_ID)
         {
-            string[] results = { "", "", "", "", "", ""};
+            string[] results = { "", "", "", "", "", "" };
             if (dbCon.IsConnect())
             {
                 string query = "SELECT matches.Match_ID, Start_DateTime, Ended, Last_Board_State, U1.Email, U2.Email FROM matches, match_between AS U1, match_between AS U2 WHERE matches.Match_ID  = " + Match_ID + " AND matches.Match_ID = U1.Match_ID AND U2.Match_ID = matches.Match_ID AND U1.Email > U2.Email";
@@ -102,9 +105,9 @@ namespace DatabaseConnection
 
         public List<Tuple<string, string>> GetUserFriends(string UserEmail)
         {
-            var myReturn = new List<Tuple<string,string>>();
+            var myReturn = new List<Tuple<string, string>>();
             if (dbCon.IsConnect())
-            {                
+            {
                 string query = "SELECT Email_1, Name FROM friends, users WHERE Email_2  = @UserEmail AND users.Email = friends.Email_1";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 cmd.Parameters.AddWithValue("@UserEmail", UserEmail);
@@ -123,7 +126,7 @@ namespace DatabaseConnection
                 var reader2 = cmd2.ExecuteReader();
                 while (reader2.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader2.GetString(0), reader.GetString(1)));
+                    myReturn.Add(Tuple.Create(reader2.GetString(0), reader2.GetString(1)));
                 }
 
                 reader2.Close();
@@ -131,9 +134,9 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string,string,string>> GetUserRequestSent(string UserEmail)
+        public List<Tuple<string, string, string>> GetUserRequestSent(string UserEmail)
         {
-            var myReturn = new List<Tuple<string,string,string>>();
+            var myReturn = new List<Tuple<string, string, string>>();
             if (dbCon.IsConnect())
             {
                 string query = "SELECT Reciver, DateTime, Name FROM friend_request, users WHERE Sender  = @UserEmail AND users.Email = friend_request.Reciver";
@@ -216,7 +219,7 @@ namespace DatabaseConnection
             var myReturn = "invalid";
             if (dbCon.IsConnect())
             {
-                string query = "SELECT top 1 Conversation_ID FROM in_conversation WHERE Email = @UserEmail_1 AND Conversation_ID IN (SELECT Conversation_ID FROM in_conversation WHERE Email = @UserEmail_2)";
+                string query = "SELECT Conversation_ID FROM in_conversation WHERE Email = @UserEmail_1 AND Conversation_ID IN (SELECT Conversation_ID FROM in_conversation WHERE Email = @UserEmail_2) LIMIT 1";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 cmd.Parameters.AddWithValue("@UserEmail_1", Email_1);
                 cmd.Parameters.AddWithValue("@UserEmail_2", Email_2);
@@ -232,7 +235,7 @@ namespace DatabaseConnection
             return myReturn;
         }
 
-        public List<Tuple<string,string, string, string, string>> GetUserMatchHistory(string UserEmail)
+        public List<Tuple<string, string, string, string, string>> GetUserMatchHistory(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, string, string, string>>();
             if (dbCon.IsConnect())
@@ -258,7 +261,7 @@ namespace DatabaseConnection
             if (dbCon.IsConnect())
             {
                 string query = "SELECT matches.Start_DateTime, match_between.Match_ID, users.Email, users.Name FROM match_between, users, matches WHERE match_between.Match_ID IN(SELECT Match_ID FROM match_between WHERE Email = @UserEmail) AND(users.Email != @UserEmail) AND (users.Email = match_between.Email) AND (matches.Match_ID=match_between.Match_ID) AND (matches.Ended !=1) ORDER BY matches.Start_DateTime DESC";
-                Console.WriteLine(query);
+                Log.D(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -279,8 +282,8 @@ namespace DatabaseConnection
             var myReturn = new List<Tuple<string, string, string>>();
             if (dbCon.IsConnect())
             {
-                string query = "SELECT Text, DateTime, Sender_Email FROM message WHERE Conversation_ID  = " + Conversation_ID+ " ORDER BY DateTime DESC";
-                Console.WriteLine(query);
+                string query = "SELECT Text, DateTime, Sender_Email FROM message WHERE Conversation_ID  = " + Conversation_ID + " ORDER BY DateTime DESC";
+                Log.D(query);
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
@@ -302,7 +305,7 @@ namespace DatabaseConnection
                 try
                 {
                     string query = "Update users SET Password = @Password, Name = @Name, Bio = @Bio, Profile_Pic = @Profile WHERE Email = @Email";
-                    Console.WriteLine(query);
+                    Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     cmd.Parameters.AddWithValue("@Email", Email);
                     cmd.Parameters.AddWithValue("@Password", Password);
@@ -334,7 +337,7 @@ namespace DatabaseConnection
                 try
                 {
                     string query = "Update matches SET Last_Board_State = " + Board_State + ", Ended = " + Ended + " WHERE Match_ID = '" + Match_ID + "'";
-                    Console.WriteLine(query);
+                    Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     var result = cmd.ExecuteNonQuery();
                     if (result == 1) { return true; }
@@ -360,7 +363,7 @@ namespace DatabaseConnection
                 try
                 {
                     string query = "Update in_conversation SET Display_Name = @NewName WHERE Conversation_ID = " + Conversation_ID + " AND Email = @Email";
-                    Console.WriteLine(query);
+                    Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     cmd.Parameters.AddWithValue("@NewName", NewName);
                     cmd.Parameters.AddWithValue("@Email", Email);
@@ -390,7 +393,7 @@ namespace DatabaseConnection
                 try
                 {
                     string query = "DELETE FROM friends WHERE (Email_1 = @Email_1 AND Email_2 = @Email_2) OR(Email_1 = @Email_2 AND Email_2 = @Email_1) ";
-                    Console.WriteLine(query);
+                    Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     cmd.Parameters.AddWithValue("@Email_1", Email_1);
                     cmd.Parameters.AddWithValue("@Email_2", Email_2);
@@ -416,7 +419,8 @@ namespace DatabaseConnection
 
 
         //--------------------------Section for insert SQL statements-------------------------------
-        public Boolean InsertUser(string Email, string Password, string Name, string Bio, string Profile) {
+        public Boolean InsertUser(string Email, string Password, string Name, string Bio, string Profile)
+        {
             if (dbCon.IsConnect())
             {
                 try
@@ -433,7 +437,8 @@ namespace DatabaseConnection
                     if (result == 1) { return true; }
                     else { return false; }
                 }
-                catch (Exception e) {
+                catch (Exception e)
+                {
                     Log.D("Database: shit went wrong");
                     Log.E(e.ToString());
                     return false;
@@ -451,7 +456,7 @@ namespace DatabaseConnection
             {
                 try
                 {
-                    string query = "INSERT INTO friend_request (Sender, Reciver) VALUES (@FromEmail, @ToEmail)";
+                    string query = "INSERT INTO friend_request (Sender, Reciver, DateTime) VALUES (@FromEmail, @ToEmail," + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + ")";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     cmd.Parameters.AddWithValue("@FromEmail", FromEmail);
                     cmd.Parameters.AddWithValue("@ToEmail", ToEmail);
@@ -486,10 +491,10 @@ namespace DatabaseConnection
                     cmd.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
                     cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
-                    Console.WriteLine(result);
+                    Log.D(result);
 
                     string query2 = "INSERT INTO friends (Email_1, Email_2) VALUES (@RequestFromEmail, @AcceptedEmail)";
-                    Console.WriteLine(query2);
+                    Log.D(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
                     cmd2.Parameters.AddWithValue("@RequestFromEmail", RequestFromEmail);
                     cmd2.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
@@ -521,11 +526,11 @@ namespace DatabaseConnection
                     string query = "INSERT INTO conversation(`Conversation_ID`) VALUES  (NULL)";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     var result = cmd.ExecuteNonQuery();
-                    Console.WriteLine(result); 
+                    Log.D(result);
 
                     //add users to the conversation just created
                     string query2 = "INSERT INTO in_conversation (Display_Name, Conversation_ID, Email) VALUES ('unName',LAST_INSERT_ID(), @Email_2), ('unName',LAST_INSERT_ID(),@Email_1)";
-                    Console.WriteLine(query2);
+                    Log.D(query2);
                     var cmd2 = new MySqlCommand(query2, dbCon.Connection);
                     cmd2.Parameters.AddWithValue("@Email_1", Email_1);
                     cmd2.Parameters.AddWithValue("@Email_2", Email_2);
@@ -560,7 +565,7 @@ namespace DatabaseConnection
                     cmd.Parameters.AddWithValue("@text", text);
                     cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
-                    Console.WriteLine(result);
+                    Log.D(result);
                     if (result == 1) { return true; }
                     else { return false; }
                 }
@@ -587,9 +592,9 @@ namespace DatabaseConnection
                     string query = "INSERT INTO matches (`Match_ID`) VALUES (NULL)";
                     Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
-                    var result = cmd.ExecuteNonQuery();    
+                    var result = cmd.ExecuteNonQuery();
                     //get match ID
-                    var query3= "SELECT LAST_INSERT_ID() FROM matches";
+                    var query3 = "SELECT LAST_INSERT_ID() FROM matches";
                     Log.D(query3);
                     var cmd3 = new MySqlCommand(query3, dbCon.Connection);
                     var reader = cmd3.ExecuteReader();
@@ -625,7 +630,8 @@ namespace DatabaseConnection
             }
         }
 
-        public void CloseDbCon() {
+        public void CloseDbCon()
+        {
             dbCon.Close();
         }
 
