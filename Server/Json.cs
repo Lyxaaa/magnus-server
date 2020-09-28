@@ -47,6 +47,7 @@ namespace Magnus {
 
     public class MessageResult : Message
     {
+        public new MsgType type = MsgType.MessageResult;
         public MsgType callingType { get; set; }
         public Result result { get; set; }
         public string error { get; set; }
@@ -260,6 +261,7 @@ namespace Magnus {
 
     }
 
+
     public enum MsgType : int {
         Ack = 0,
         Heartbeat = 1,
@@ -310,6 +312,7 @@ namespace Magnus {
 
         GetMatchHistory = 32,
         GetMatchHistoryResult = 33,
+        GenericResult = 34,
 
         Unknown = int.MaxValue
     }

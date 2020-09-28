@@ -130,7 +130,8 @@ namespace Magnus {
                         server.SendToClient(clientId, new MessageResult()
                         {
                             result = Result.Success,
-                            callingType = MsgType.UpdateUserProfile
+                            callingType = MsgType.UpdateUserProfile,
+                            type = MsgType.MessageResult
                         });
                     }
                     else
@@ -139,7 +140,8 @@ namespace Magnus {
                         {
                             result = Result.Failure,
                             error = "update failed see database log for details",
-                            callingType = MsgType.UpdateUserProfile
+                            callingType = MsgType.UpdateUserProfile,
+                            type = MsgType.MessageResult
                         });
                     }
                 }
@@ -156,7 +158,8 @@ namespace Magnus {
                             server.SendToClient(clientId, new MessageResult()
                             {
                                 result = Result.Success,
-                                callingType = MsgType.UpdateUserPassword
+                                callingType = MsgType.UpdateUserPassword,
+                                type = MsgType.MessageResult
                             });
                         }
                         else
@@ -165,7 +168,8 @@ namespace Magnus {
                             {
                                 result = Result.Failure,
                                 error = "update failed see database log for details",
-                                callingType = MsgType.UpdateUserPassword
+                                callingType = MsgType.UpdateUserPassword,
+                                type = MsgType.MessageResult
                             });
                         }
                     }
@@ -175,7 +179,8 @@ namespace Magnus {
                         {
                             result = Result.Failure,
                             error = "Incorrect Password",
-                            callingType = MsgType.UpdateUserPassword
+                            callingType = MsgType.UpdateUserPassword,
+                            type = MsgType.MessageResult
                         });
                     }
                 }
@@ -189,7 +194,8 @@ namespace Magnus {
                         server.SendToClient(clientId, new MessageResult()
                         {
                             result = Result.Success,
-                            callingType = MsgType.SendFriendRequest
+                            callingType = MsgType.SendFriendRequest,
+                            type = MsgType.MessageResult
                         });
                     }
                     else
@@ -198,7 +204,8 @@ namespace Magnus {
                         {
                             result = Result.Failure,
                             error = "friend request failed see database log for details",
-                            callingType = MsgType.SendFriendRequest
+                            callingType = MsgType.SendFriendRequest,
+                            type = MsgType.MessageResult
                         });
                     }
                 }
@@ -378,7 +385,8 @@ namespace Magnus {
                         server.SendToClient(clientId, new MessageResult()
                         {
                             result = Result.Success,
-                            callingType = MsgType.SendMessage
+                            callingType = MsgType.SendMessage,
+                            type = MsgType.MessageResult
                         });
                     }
                     else
@@ -387,7 +395,8 @@ namespace Magnus {
                         {
                             result = Result.Failure,
                             error = "friend request failed see database log for details",
-                            callingType = MsgType.SendMessage
+                            callingType = MsgType.SendMessage,
+                            type = MsgType.MessageResult
                         });
                     }
                 }
@@ -604,7 +613,8 @@ namespace Magnus {
                             {
                                 result = Result.Failure,
                                 error = "something went wrong during matchmaking",
-                                callingType = MsgType.EnterMatchQueue
+                                callingType = MsgType.EnterMatchQueue,
+                                type = MsgType.MatchFound
                             });
                         }
                     }
@@ -634,7 +644,8 @@ namespace Magnus {
                     {
                         result = Result.Invalid,
                         error = "error or listener not implamanted ",
-                        callingType = MsgType.SendFriendRequest
+                        callingType = MsgType.SendFriendRequest,
+                        type = MsgType.MessageResult
                     });
                 }
                 #endregion
@@ -644,7 +655,8 @@ namespace Magnus {
                     {
                         result = Result.Invalid,
                         error = "error or listener not implamanted ",
-                        callingType = MsgType.SendFriendRequest
+                        callingType = MsgType.SendFriendRequest,
+                        type = MsgType.MessageResult
                     });
                 }
                 };
