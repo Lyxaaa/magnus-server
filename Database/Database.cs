@@ -491,7 +491,7 @@ namespace DatabaseConnection
                     cmd.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
                     cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
-                    Log.D(result);
+                    Log.D(result.ToString());
 
                     string query2 = "INSERT INTO friends (Email_1, Email_2) VALUES (@RequestFromEmail, @AcceptedEmail)";
                     Log.D(query2);
@@ -526,7 +526,7 @@ namespace DatabaseConnection
                     string query = "INSERT INTO conversation(`Conversation_ID`) VALUES  (NULL)";
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     var result = cmd.ExecuteNonQuery();
-                    Log.D(result);
+                    Log.D(result.ToString());
 
                     //add users to the conversation just created
                     string query2 = "INSERT INTO in_conversation (Display_Name, Conversation_ID, Email) VALUES ('unName',LAST_INSERT_ID(), @Email_2), ('unName',LAST_INSERT_ID(),@Email_1)";
@@ -565,7 +565,7 @@ namespace DatabaseConnection
                     cmd.Parameters.AddWithValue("@text", text);
                     cmd.Prepare();
                     var result = cmd.ExecuteNonQuery();
-                    Log.D(result);
+                    Log.D(result.ToString());
                     if (result == 1) { return true; }
                     else { return false; }
                 }
