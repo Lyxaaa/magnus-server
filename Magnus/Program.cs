@@ -17,7 +17,7 @@ namespace Magnus {
             var database = new Database();
             var server = new Server(null, 2457);
             var playqueue = new List<Tuple<string, string>>();//cliantid, email
-
+            Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
                 #region Login
@@ -44,6 +44,7 @@ namespace Magnus {
                             bio = result.Item4
                             //profile = result.Item5 // < this is a file directory, convert this into bytes and then send it
                         });
+                        emailtoclientid.Add(result.Item1, clientId);
                     }
                     else
                     {
@@ -500,13 +501,28 @@ namespace Magnus {
                     }
                     if (!String.IsNullOrEmpty(result))
                     {
-                        server.SendToClient(clientId, new CreateMatchResult()
+                        if (emailtoclientid.ContainsKey(creatematch.email_1)) { 
+
+                            server.SendToClient(emailtoclientid[creatematch.email_1], new CreateMatchResult()
+                            {
+                                result = Result.Success,
+                                callingType = MsgType.CreateMatch,
+                                matchId = result,
+                                conversationId = coversation
+                            });
+
+                        }
+
+                        if (emailtoclientid.ContainsKey(creatematch.email_2))
                         {
-                            result = Result.Success,
-                            callingType = MsgType.CreateMatch,
-                            matchId = result,
-                            conversationId = coversation
-                        });
+                            server.SendToClient(emailtoclientid[creatematch.email_2], new CreateMatchResult()
+                            {
+                                result = Result.Success,
+                                callingType = MsgType.CreateMatch,
+                                matchId = result,
+                                conversationId = coversation
+                            });
+                        }
                     }
                     else
                     {
