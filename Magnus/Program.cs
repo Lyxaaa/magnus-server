@@ -487,7 +487,6 @@ namespace Magnus {
                     }
                 }
                 #endregion
-                //do we need to send message to both cliants and if so do we need additional fields on the message to include cliant id or alter the database?
                 #region CreateMatch 
                 else if (Msg.TryCast(dataType, data, (int)MsgType.CreateMatch, out CreateMatch creatematch))
                 {
@@ -501,7 +500,8 @@ namespace Magnus {
                     }
                     if (!String.IsNullOrEmpty(result))
                     {
-                        if (emailtoclientid.ContainsKey(creatematch.email_1)) { 
+                        if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(creatematch.email_2))
+                        {
 
                             server.SendToClient(emailtoclientid[creatematch.email_1], new CreateMatchResult()
                             {
@@ -510,11 +510,6 @@ namespace Magnus {
                                 matchId = result,
                                 conversationId = coversation
                             });
-
-                        }
-
-                        if (emailtoclientid.ContainsKey(creatematch.email_2))
-                        {
                             server.SendToClient(emailtoclientid[creatematch.email_2], new CreateMatchResult()
                             {
                                 result = Result.Success,
@@ -522,7 +517,9 @@ namespace Magnus {
                                 matchId = result,
                                 conversationId = coversation
                             });
+
                         }
+
                     }
                     else
                     {
@@ -656,14 +653,157 @@ namespace Magnus {
                 #region SendChallenge
                 else if (Msg.TryCast(dataType, data, (int)MsgType.SendChallenge, out SendChallenge sendchallenge))
                 {
-                    server.SendToClient(clientId, new MessageResult()
+                    if (emailtoclientid.ContainsKey(sendchallenge.opponentemail))
                     {
-                        result = Result.Invalid,
-                        error = "error or listener not implamanted ",
-                        callingType = MsgType.SendFriendRequest,
-                        type = MsgType.MessageResult
+
+                        server.SendToClient(emailtoclientid[sendchallenge.opponentemail], new SendChallenge()
+                        {
+                            youremail = sendchallenge.opponentemail,
+                            opponentemail = sendchallenge.youremail,
+                            type = MsgType.SendChallenge
+                        });
+
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Success,
+                            error = "opponent not logged in",
+                            callingType = MsgType.SendChallenge,
+                            type = MsgType.MessageResult
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Failure,
+                            error = "opponent not logged in",
+                            callingType = MsgType.SendChallenge,
+                            type = MsgType.MessageResult
+                        });
+                    }
+
+                }
+                #endregion
+                #region AcceptChallenge
+                else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptChallenge, out AcceptChallenge acceptchallenge))
+                {
+                    if (acceptchallenge.Accept)
+                    {
+                        var result = database.InsertMatch(acceptchallenge.youremail, acceptchallenge.opponentemail);
+                        //get conversation ID or create if non exist
+                        var coversation = database.GetConversationsBetween(acceptchallenge.youremail, acceptchallenge.opponentemail);
+                        if (coversation == "invalid")
+                        {
+                            database.InsertConversation(acceptchallenge.youremail, acceptchallenge.opponentemail);
+                            coversation = database.GetConversationsBetween(acceptchallenge.youremail, acceptchallenge.opponentemail);
+                        }
+                        if (!String.IsNullOrEmpty(result))
+                        {
+                            if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(acceptchallenge.opponentemail))
+                            {
+
+                                server.SendToClient(emailtoclientid[acceptchallenge.youremail], new CreateMatchResult()
+                                {
+                                    result = Result.Success,
+                                    callingType = MsgType.CreateMatch,
+                                    matchId = result,
+                                    conversationId = coversation
+                                });
+                                server.SendToClient(emailtoclientid[acceptchallenge.opponentemail], new CreateMatchResult()
+                                {
+                                    result = Result.Success,
+                                    callingType = MsgType.CreateMatch,
+                                    matchId = result,
+                                    conversationId = coversation
+                                });
+
+                            }
+                        }
+                        else
+                        {
+                            server.SendToClient(clientId, new CreateMatchResult()
+                            {
+                                result = Result.Failure,
+                                error = "match request failed see database log for details",
+                                callingType = MsgType.CreateMatch
+                            });
+                        }
+                    }
+                }
+                #endregion
+                #region UpdateBoard
+                else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateBoard, out UpdateBoard updateboard))
+                {
+                    var board = updateboard.board.Split(',').Select(Int32.Parse).ToList();
+                    var Match = database.GetMatch(updateboard.matchId);
+                    var oldboardstring = Match.Item4;
+                    var oldboard = oldboardstring.Split(',').Select(Int32.Parse).ToList();
+                    var newboard = "";
+                    if (board.Count == 64)
+                    {
+                        if (updateboard.White)
+                        {
+                            for (int i = 0; i<64;i++) {
+                                if ((board[i] < 7 && board[i] > 0) || (oldboard[i] < 7 && oldboard[i] > 0))
+                                {
+                                    newboard += board[i].ToString();
+                                }
+                                else {
+                                    newboard += oldboard[i].ToString();
+                                }
+                                if (i<63) {
+                                    newboard += ",";
+                                }
+                            }
+                        }
+                        else {
+                            for (int i = 0; i < 64; i++)
+                            {
+                                if ((board[i] > 6) || (oldboard[i] >6))
+                                {
+                                    newboard += board[i].ToString();
+                                }
+                                else
+                                {
+                                    newboard += oldboard[i].ToString();
+                                }
+                                if (i < 63)
+                                {
+                                    newboard += ",";
+                                }
+                            }
+                        }
+                        database.UpdateMatch(updateboard.matchId,Match.Item3, newboard);
+                        server.SendToClient(clientId, new BoardResult()
+                        {
+                            result = Result.Success,
+                            board = newboard,
+                            matchId = updateboard.matchId
+                        });
+                    }
+                    else {
+                        server.SendToClient(clientId, new BoardResult()
+                        {
+                            result = Result.Invalid,
+                            error = "invalid board state Recived"
+                        });
+                    }
+                }
+                #endregion
+                #region GetBoardState
+                else if (Msg.TryCast(dataType, data, (int)MsgType.GetBoardState, out GetBoardState getboardstate))
+                {
+                    var Match = database.GetMatch(getboardstate.matchId);
+                    var boardstring = Match.Item4;
+                    server.SendToClient(clientId, new BoardResult()
+                    {
+                        result = Result.Success,
+                        board = boardstring,
+                        matchId = getboardstate.matchId
                     });
                 }
+                #endregion
+                #region placeholder
                 #endregion
                 else
                 {

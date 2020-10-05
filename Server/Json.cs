@@ -269,7 +269,28 @@ namespace Magnus {
         public string opponentemail { get; set; }
 
     }
+    
+    public class UpdateBoard : Message
+    {
+        public new MsgType type = MsgType.UpdateBoard;
+        public string matchId { get; set; }
+        public string board { get; set; }
+        public bool White { get; set; }
+    }
 
+    public class GetBoardState : Message
+    {
+        public new MsgType type = MsgType.GetBoardState;
+        public string matchId { get; set; }
+    }
+
+    public class BoardResult : MessageResult
+    {
+        public new MsgType type = MsgType.BoardResult;
+        public string matchId { get; set; }
+        public string board { get; set; }
+
+    }
 
     public enum MsgType : int {
         Ack = 0,
@@ -323,7 +344,35 @@ namespace Magnus {
         GetMatchHistoryResult = 33,
         AcceptChallenge = 34,
 
+        UpdateBoard = 35,
+        GetBoardState = 36,
+        BoardResult = 37,
+
         Unknown = int.MaxValue
+    }
+
+    public enum BoadState : int
+    {
+        Empty = 0,
+        WhitePawn = 1,
+
+        WhiteRook = 2,
+        WhiteKnight = 3,
+        WhiteBishop = 4,
+
+        WhiteKing = 5,
+        WhiteQueen = 6,
+
+        BlackPawn = 7,
+
+        BlackRook = 8,
+        BlackKnight = 9,
+        BlackBishop = 10,
+
+        BlackKing = 11,
+        BlackQueen = 12,
+
+
     }
 
 
