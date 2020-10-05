@@ -17,8 +17,8 @@ namespace Test {
             client.FilterDataType(Include.DataType.Undefined, true);
 
             // ignore the heartbeat and acks
-            client.FilterMessageType(MsgType.Heartbeat, true);
-            client.FilterMessageType(MsgType.Ack, true);
+            //client.FilterMessageType(MsgType.Heartbeat, true);
+            //client.FilterMessageType(MsgType.Ack, true);
 
             Thread.Sleep(1000);
 

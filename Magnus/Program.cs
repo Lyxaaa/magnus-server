@@ -490,18 +490,19 @@ namespace Magnus {
                 #region CreateMatch 
                 else if (Msg.TryCast(dataType, data, (int)MsgType.CreateMatch, out CreateMatch creatematch))
                 {
-                    var result = database.InsertMatch(creatematch.email_1, creatematch.email_2);
-                    //get conversation ID or create if non exist
-                    var coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
-                    if (coversation == "invalid")
+                    if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(creatematch.email_2))
                     {
-                        database.InsertConversation(creatematch.email_1, creatematch.email_2);
-                        coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
-                    }
-                    if (!String.IsNullOrEmpty(result))
-                    {
-                        if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(creatematch.email_2))
+                        var result = database.InsertMatch(creatematch.email_1, creatematch.email_2);
+                        //get conversation ID or create if non exist
+                        var coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                        if (coversation == "invalid")
                         {
+                            database.InsertConversation(creatematch.email_1, creatematch.email_2);
+                            coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                        }
+                        if (!String.IsNullOrEmpty(result))
+                        {
+
 
                             server.SendToClient(emailtoclientid[creatematch.email_1], new CreateMatchResult()
                             {
@@ -517,19 +518,28 @@ namespace Magnus {
                                 matchId = result,
                                 conversationId = coversation
                             });
-
                         }
-
+                        else
+                        {
+                            server.SendToClient(clientId, new CreateMatchResult()
+                            {
+                                result = Result.Failure,
+                                error = "match request failed see database log for details",
+                                callingType = MsgType.CreateMatch
+                            });
+                        }
                     }
                     else
                     {
                         server.SendToClient(clientId, new CreateMatchResult()
                         {
                             result = Result.Failure,
-                            error = "match request failed see database log for details",
-                            callingType = MsgType.CreateMatch
+                            callingType = MsgType.CreateMatch,
+                            error = "failed to find clientID for 1 or both users"
                         });
                     }
+
+                   
                 }
                 #endregion 
                 #region GetMatchHistory
