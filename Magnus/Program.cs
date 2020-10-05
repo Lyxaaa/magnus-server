@@ -822,10 +822,8 @@ namespace Magnus {
                     });
                 }
                 #endregion
-                #region placeholder
-                #endregion
-                else
-                {
+                #region Invalid
+                else {
                     server.SendToClient(clientId, new MessageResult()
                     {
                         result = Result.Invalid,
@@ -834,12 +832,10 @@ namespace Magnus {
                         type = MsgType.MessageResult
                     });
                 }
-                };
-
-                
+                #endregion
+            };
 
             server.Begin();
-
 
             Console.ReadKey();
             server.End();
