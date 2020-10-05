@@ -5,6 +5,7 @@ using System.Threading;
 namespace Test {
     class Program {
         static void Main(string[] args) {
+            //MARK string ip = "127.0.0.1";
             string ip = "192.168.1.42";
             int port = 2457;
 
@@ -17,8 +18,8 @@ namespace Test {
             client.FilterDataType(Include.DataType.Undefined, true);
 
             // ignore the heartbeat and acks
-            //client.FilterMessageType(MsgType.Heartbeat, true);
-            //client.FilterMessageType(MsgType.Ack, true);
+            client.FilterMessageType(MsgType.Heartbeat, true);
+            client.FilterMessageType(MsgType.Ack, true);
 
             Thread.Sleep(1000);
 

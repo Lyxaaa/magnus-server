@@ -351,7 +351,7 @@ namespace Magnus {
         Unknown = int.MaxValue
     }
 
-    public enum BoadState : int
+    public enum BoardState : int
     {
         Empty = 0,
         WhitePawn = 1,
@@ -371,7 +371,6 @@ namespace Magnus {
 
         BlackKing = 11,
         BlackQueen = 12,
-
 
     }
 
