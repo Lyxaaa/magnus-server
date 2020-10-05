@@ -699,26 +699,20 @@ namespace Magnus {
                 {
                     if (acceptchallenge.Accept)
                     {
-                        var result = database.InsertMatch(acceptchallenge.youremail, acceptchallenge.opponentemail);
-                        //get conversation ID or create if non exist
-                        var coversation = database.GetConversationsBetween(acceptchallenge.youremail, acceptchallenge.opponentemail);
-                        if (coversation == "invalid")
+                        if (emailtoclientid.ContainsKey(acceptchallenge.opponentemail) && emailtoclientid.ContainsKey(acceptchallenge.youremail))
                         {
-                            database.InsertConversation(acceptchallenge.youremail, acceptchallenge.opponentemail);
-                            coversation = database.GetConversationsBetween(acceptchallenge.youremail, acceptchallenge.opponentemail);
-                        }
-                        if (!String.IsNullOrEmpty(result))
-                        {
-                            if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(acceptchallenge.opponentemail))
+                            var result = database.InsertMatch(acceptchallenge.opponentemail, acceptchallenge.youremail);
+                            //get conversation ID or create if non exist
+                            var coversation = database.GetConversationsBetween(acceptchallenge.opponentemail, acceptchallenge.youremail);
+                            if (coversation == "invalid")
+                            {
+                                database.InsertConversation(acceptchallenge.opponentemail, acceptchallenge.youremail);
+                                coversation = database.GetConversationsBetween(acceptchallenge.opponentemail, acceptchallenge.youremail);
+                            }
+                            if (!String.IsNullOrEmpty(result))
                             {
 
-                                server.SendToClient(emailtoclientid[acceptchallenge.youremail], new CreateMatchResult()
-                                {
-                                    result = Result.Success,
-                                    callingType = MsgType.CreateMatch,
-                                    matchId = result,
-                                    conversationId = coversation
-                                });
+
                                 server.SendToClient(emailtoclientid[acceptchallenge.opponentemail], new CreateMatchResult()
                                 {
                                     result = Result.Success,
@@ -726,7 +720,22 @@ namespace Magnus {
                                     matchId = result,
                                     conversationId = coversation
                                 });
-
+                                server.SendToClient(emailtoclientid[acceptchallenge.youremail], new CreateMatchResult()
+                                {
+                                    result = Result.Success,
+                                    callingType = MsgType.CreateMatch,
+                                    matchId = result,
+                                    conversationId = coversation
+                                });
+                            }
+                            else
+                            {
+                                server.SendToClient(clientId, new CreateMatchResult()
+                                {
+                                    result = Result.Failure,
+                                    error = "match request failed see database log for details",
+                                    callingType = MsgType.CreateMatch
+                                });
                             }
                         }
                         else
@@ -734,10 +743,10 @@ namespace Magnus {
                             server.SendToClient(clientId, new CreateMatchResult()
                             {
                                 result = Result.Failure,
-                                error = "match request failed see database log for details",
-                                callingType = MsgType.CreateMatch
+                                callingType = MsgType.CreateMatch,
+                                error = "failed to find clientID for 1 or both users"
                             });
-                        }
+                        }                   
                     }
                 }
                 #endregion
