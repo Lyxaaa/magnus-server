@@ -871,6 +871,56 @@ namespace Magnus {
                     });
                 }
                 #endregion
+                #region RetrieveOtherUsers
+                else if (Msg.TryCast(dataType, data, (int)MsgType.RetrieveOtherUsers, out RetrieveOtherUsers retrieveotherusers))
+                {
+                    var result = database.GetAllOtherUserProfile(retrieveotherusers.email);
+                    if (result.Count >= 1)
+                    {
+                        var returnemail = new List<String>();
+                        var returnname = new List<String>();
+                        var returnuserid = new List<String>();
+                        var returnbio = new List<String>();
+                        for (int i = 1; i < result.Count; i++)
+                        {
+                            returnemail.Add(result[i].Item1);
+                            returnname.Add(result[i].Item2);
+                            returnuserid.Add(HashString(result[i].Item1));
+                            returnbio.Add(result[i].Item3);
+                        }
+                        server.SendToClient(clientId, new RetrieveOtherUsersResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.RetrieveOtherUsers,
+                            email = returnemail.ToArray(),
+                            userId = returnuserid.ToArray(),
+                            name = returnname.ToArray(),
+                            bio = returnbio.ToArray()
+
+                        });
+                    }
+                    else if (result.Count == 0)
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "zero results returned",
+                            callingType = MsgType.GetFriends
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new GetFriendsResult()
+                        {
+                            result = Result.Failure,
+                            error = "friend request failed see database log for details",
+                            callingType = MsgType.GetFriends
+                        });
+                    }
+
+                }
+
+                #endregion
                 #region Invalid
                 else {
                     server.SendToClient(clientId, new MessageResult()
