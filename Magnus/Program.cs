@@ -7,6 +7,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.IO;
 
 namespace Magnus {
     class Program {
@@ -17,12 +19,34 @@ namespace Magnus {
             var database = new Database();
             var server = new Server(null, 2457);
             var playqueue = new List<Tuple<string, string>>();//cliantid, email
+            var directory = "C:\\images\\";
             Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
+
+            /*
+            try
+            {
+                Image img = Image.FromFile("C:\\images\\Mark.jpg");
+                //img.Save("C:\\images\\testResult1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
+                byte[] bitmap = imgToByteArray(img);
+
+                using (Image image = Image.FromStream(new MemoryStream(bitmap)))
+                {
+                    image.Save("C:\\images\\testResult2.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);  // Or Png
+                }
+
+            }
+            catch (Exception e) {
+                System.Console.WriteLine(e);
+            }
+            */
+
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
+                System.Console.WriteLine("got message");               
                 #region Login
                 if (Msg.TryCast(dataType, data, (int)MsgType.Login, out Login login))
                 {
+                    System.Console.WriteLine("login");
                     var result = database.GetSelectUserProfile(login.email);
 
                     if (result.Item1 != login.email)
@@ -35,14 +59,19 @@ namespace Magnus {
                     }
                     else if (result.Item2 == login.password)
                     {
+                        byte[] bitmap = null;
+                        if (!String.IsNullOrEmpty(result.Item5)) {
+                            Image img = Image.FromFile(result.Item5);
+                            bitmap = imgToByteArray(img);
+                        }
                         server.SendToClient(clientId, new LoginResult()
                         {
                             result = Result.Success,
                             email = result.Item1,
                             uniqueId = HashString(result.Item1),
                             userName = result.Item3,
-                            bio = result.Item4
-                            //profile = result.Item5 // < this is a file directory, convert this into bytes and then send it
+                            bio = result.Item4,
+                            profile = bitmap
                         });
                         emailtoclientid.Add(result.Item1, clientId);
                     }
@@ -70,14 +99,19 @@ namespace Magnus {
                     }
                     else
                     {
+                        byte[] bitmap = null;
+                        if (!String.IsNullOrEmpty(result.Item5)) {
+                            Image img = Image.FromFile(result.Item5);
+                            bitmap = imgToByteArray(img);
+                        }
                         server.SendToClient(clientId, new LoginResult()
                         {
                             result = Result.Success,
                             email = result.Item1,
                             uniqueId = HashString(result.Item1),
                             userName = result.Item3,
-                            bio = result.Item4
-                            //profile = result.Item5 // < this is a file directory, convert this into bytes and then send it
+                            bio = result.Item4,
+                            profile = bitmap
                         });
                     }
                 }
@@ -85,7 +119,8 @@ namespace Magnus {
                 #region RegisterUser
                 else if (Msg.TryCast(dataType, data, (int)MsgType.RegisterUser, out RegisterUser registeruser))
                 {
-                    var result = database.InsertUser(registeruser.email, registeruser.password, registeruser.name, registeruser.bio, "Profile pic placeholder");
+
+                    var result = database.InsertUser(registeruser.email, registeruser.password, registeruser.name, registeruser.bio, "");
                     if (result)
                     {
                         server.SendToClient(clientId, new LoginResult()
@@ -111,6 +146,20 @@ namespace Magnus {
                 #region UpdateUserProfile
                 else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserProfile, out UpdateUserProfile updateuserprofile))
                 {
+                    System.Console.WriteLine("updating profile");
+                    String profile = "";
+                    if (updateuserprofile.profile != null && updateuserprofile.profile.Length > 0)
+                    {
+                        profile = directory + updateuserprofile.email.GetHashCode() + ".jpg";
+                        using (Image image = Image.FromStream(new MemoryStream(updateuserprofile.profile)))
+                        {
+                            if (File.Exists(profile))
+                            {
+                                File.Delete(profile);
+                            }
+                            image.Save(profile, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        }
+                    }
                     var prior = database.GetSelectUserProfile(updateuserprofile.email);
                     var newName = updateuserprofile.name;
                     var newBio = updateuserprofile.bio;
@@ -124,7 +173,7 @@ namespace Magnus {
                         newBio = prior.Item4;
                     }
 
-                    var result = database.UpdateUser(updateuserprofile.email, prior.Item2, newName, updateuserprofile.bio, "Profile pic placeholder");
+                    var result = database.UpdateUser(updateuserprofile.email, prior.Item2, newName, updateuserprofile.bio, profile);
 
                     if (result)
                     {
@@ -343,7 +392,7 @@ namespace Magnus {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item2);
                             returnuserid.Add(HashString(result[i].Item1));
-                            //this will be removed lates and is a temporary way to get conversation ID
+                            //this will be removed later and is a temporary way to get conversation ID (this is inefficient and Coversation ID needs to be added to GetFriends query)
                             returnconversationid.Add(database.GetConversationsBetween(getfriends.email, (result[i].Item1)));
                         }
                         server.SendToClient(clientId, new GetFriendsResult()
@@ -861,5 +910,16 @@ namespace Magnus {
 
             return new string(hash2);
         }
+        
+        //convert image to bytearray
+        public static byte[] imgToByteArray(Image img)
+        {
+            using (MemoryStream mStream = new MemoryStream())
+            {
+                img.Save(mStream, img.RawFormat);
+                return mStream.ToArray();
+            }
+        }
+        
     }
 }

@@ -292,6 +292,27 @@ namespace Magnus {
 
     }
 
+    //added 11/10/2020
+    public class RetrieveOtherUsers : Message
+    {
+        public new MsgType type = MsgType.RetrieveOtherUsers;
+        public string email { get; set; }
+    }
+
+    public class RetrieveOtherUsersResult : MessageResult
+    {
+        public new MsgType type = MsgType.RetrieveUserProfileResult;
+        public string[] userId { get; set; }
+        public string[] email { get; set; }
+        public string[] name { get; set; }
+        public string[] bio { get; set; }
+        //user to limit the size of the return message not yet implamented in SQL
+        public int limit { get; set; } //this is the limit to the number of profiles retrived
+        public int offset { get; set; } //this is the offset used to retrive rows beyone the limit i.e. limit 50 offset 50 will retrive rows 51-100
+        //removed due to message length limit
+        //public byte[] profile { get; set; }
+    }
+
     public enum MsgType : int {
         Ack = 0,
         Heartbeat = 1,
@@ -347,6 +368,10 @@ namespace Magnus {
         UpdateBoard = 35,
         GetBoardState = 36,
         BoardResult = 37,
+
+        //added 11/10/2020
+        RetrieveOtherUsers = 38,
+        RetrieveOtherUsersResult = 39,
 
         Unknown = int.MaxValue
     }

@@ -25,12 +25,17 @@ namespace DatabaseConnection
 
 
         //----------------------section for select SQL statements-------------------------------------
+        /// <summary>
+        /// retrives a users profile from the database
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns>a tupple with Email, Password, Name, Bio, profile(file location) all as strings</returns>
         public Tuple<string, string, string, string, string> GetSelectUserProfile(string UserEmail)
         {
             string[] results = { "", "", "", "", "" };
             if (dbCon.IsConnect())
             {
-                string query = "SELECT * FROM users WHERE Email  = @UserEmail";
+                string query = "SELECT Email, Password, Name, Bio, Profile_Pic FROM users WHERE Email  = @UserEmail";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 cmd.Parameters.AddWithValue("@UserEmail", UserEmail);
                 cmd.Prepare();
@@ -51,6 +56,11 @@ namespace DatabaseConnection
             return Tuple.Create(results[0], results[1], results[2], results[3], results[4]);
         }
 
+        /// <summary>
+        /// retrives all information about a match between 2 players based on a match ID
+        /// </summary>
+        /// <param name="Match_ID"></param>
+        /// <returns></returns>
         public Tuple<string, string, string, string, string, string> GetMatch(string Match_ID)
         {
             string[] results = { "", "", "", "", "", "" };
@@ -75,13 +85,21 @@ namespace DatabaseConnection
             return Tuple.Create(results[0], results[1], results[2], results[3], results[4], results[5]);
         }
 
-        public List<Tuple<string, string, string, string, string>> GetAllOtherUserProfile(string UserEmail)
+        /// <summary>
+        /// get all user profiles except for 1 user
+        /// used for searching for friends and such
+        /// should set limit and offset later
+        /// should remove password but not worth the effort 
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns>a list of tupples containing Email, Password, Name, Bio, profile(file location) all as strings</returns>
+        public List<Tuple<string, string, string, string>> GetAllOtherUserProfile(string UserEmail)
         {
             string[] results = { "", "", "", "", "" };
-            var myReturn = new List<Tuple<string, string, string, string, string>>();
+            var myReturn = new List<Tuple<string, string, string, string>>();
             if (dbCon.IsConnect())
             {
-                string query = "SELECT * FROM users WHERE Email  != @UserEmail";
+                string query = "SELECT Email, Name, Bio, Profile_Pic FROM users WHERE Email  != @UserEmail";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 cmd.Parameters.AddWithValue("@UserEmail", UserEmail);
                 cmd.Prepare();
@@ -95,14 +113,20 @@ namespace DatabaseConnection
                             results[i] = reader.GetString(i);
                         }
                     }
-                    Log.D("Database: Email:" + results[0] + ", Password:" + results[1] + ", Name:" + results[2] + ", Bio:" + results[3] + ", Profile:" + results[4]);
-                    myReturn.Add(Tuple.Create(results[0], results[1], results[2], results[3], results[4]));
+                    Log.D("Database: Email:" + results[0] +", Name:" + results[1] + ", Bio:" + results[2] + ", Profile:" + results[3]);
+                    myReturn.Add(Tuple.Create(results[0], results[1], results[2], results[3]));
                 }
                 reader.Close();
             }
             return myReturn;
         }
 
+        /// <summary>
+        /// get a list of a users friends emails and names
+        /// TODO add Conversation ID's
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns>a list of tupples containing Email and name</returns>
         public List<Tuple<string, string>> GetUserFriends(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string>>();
@@ -134,6 +158,11 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// get a list of Friends Requests sent by user
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns>a list of tuples containing Email, DateTime and Name as strings</returns>
         public List<Tuple<string, string, string>> GetUserRequestSent(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, string>>();
@@ -154,6 +183,11 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// get a list of friend requests recived
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns>a list of tuples containing Email, DateTime and Name as strings</returns>
         public List<Tuple<string, string, String>> GetUserRequestRecived(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, String>>();
@@ -174,6 +208,11 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// NOT IN USE
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns></returns>
         public List<Tuple<string, string>> GetUserConversations(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string>>();
@@ -193,7 +232,11 @@ namespace DatabaseConnection
             }
             return myReturn;
         }
-
+        /// <summary>
+        /// NOT IN USE
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns></returns>
         public List<Tuple<string, string, string, string>> GetUserConversationsFull(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, string, string>>();
@@ -214,6 +257,12 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// A method to retrice the Conversation ID of a conversation between 2 users
+        /// </summary>
+        /// <param name="Email_1"></param>
+        /// <param name="Email_2"></param>
+        /// <returns>the conversation ID as a string</returns>
         public string GetConversationsBetween(string Email_1, string Email_2)
         {
             var myReturn = "invalid";
@@ -235,6 +284,11 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// retrive a users match history
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns></returns>
         public List<Tuple<string, string, string, string, string>> GetUserMatchHistory(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, string, string, string>>();
@@ -255,6 +309,12 @@ namespace DatabaseConnection
             return myReturn;
         }
 
+        /// <summary>
+        /// get all users open matches
+        /// NOT IN USE
+        /// </summary>
+        /// <param name="UserEmail"></param>
+        /// <returns></returns>
         public List<Tuple<string, string, string, string>> GetUserOpenMatch(string UserEmail)
         {
             var myReturn = new List<Tuple<string, string, string, string>>();
@@ -276,7 +336,12 @@ namespace DatabaseConnection
 
 
 
-        //returns all messages in a conversation in reverse cronological order (most recent to olders)
+
+        /// <summary>
+        /// returns all messages in a conversation in reverse cronological order (most recent to olders)
+        /// </summary>
+        /// <param name="Conversation_ID"></param>
+        /// <returns>a list of tuples containing Text, DateTime, Sender Email as strings</returns>
         public List<Tuple<string, string, string>> GetMessages(string Conversation_ID)
         {
             var myReturn = new List<Tuple<string, string, string>>();
@@ -298,6 +363,16 @@ namespace DatabaseConnection
 
 
         //--------------------------Section for Update SQL statements-------------------------------
+        /// <summary>
+        /// used to update a users profile
+        /// not cannot update Email using this method
+        /// </summary>
+        /// <param name="Email"></param>
+        /// <param name="Password"></param>
+        /// <param name="Name"></param>
+        /// <param name="Bio"></param>
+        /// <param name="Profile"></param>
+        /// <returns>true if the update succeded</returns>
         public Boolean UpdateUser(string Email, string Password, string Name, string Bio, string Profile)
         {
             if (dbCon.IsConnect())
@@ -330,6 +405,13 @@ namespace DatabaseConnection
             }
         }
 
+        /// <summary>
+        /// update a match to indicate it has finished or that the board state has changed
+        /// </summary>
+        /// <param name="Match_ID"></param>
+        /// <param name="Ended"></param>
+        /// <param name="Board_State"></param>
+        /// <returns></returns>
         public Boolean UpdateMatch(string Match_ID, string Ended, string Board_State)
         {
             if (dbCon.IsConnect())
@@ -356,6 +438,13 @@ namespace DatabaseConnection
             }
         }
 
+        /// <summary>
+        /// NOT IN USE
+        /// </summary>
+        /// <param name="Conversation_ID"></param>
+        /// <param name="NewName"></param>
+        /// <param name="Email"></param>
+        /// <returns></returns>
         public Boolean UpdateConversationName(string Conversation_ID, string NewName, string Email)
         {
             if (dbCon.IsConnect())
@@ -386,13 +475,21 @@ namespace DatabaseConnection
         }
 
         //--------------------------Section for Remove SQL statements-------------------------------
+        /// <summary>
+        /// used to remove a user from their friend list
+        /// Order not Important
+        /// NOT I USE
+        /// </summary>
+        /// <param name="Email_1"></param>
+        /// <param name="Email_2"></param>
+        /// <returns></returns>
         public Boolean RemoveFriend(string Email_1, string Email_2)
         {
             if (dbCon.IsConnect())
             {
                 try
                 {
-                    string query = "DELETE FROM friends WHERE (Email_1 = @Email_1 AND Email_2 = @Email_2) OR(Email_1 = @Email_2 AND Email_2 = @Email_1) ";
+                    string query = "DELETE FROM friends WHERE (Email_1 = @Email_1 AND Email_2 = @Email_2) OR (Email_1 = @Email_2 AND Email_2 = @Email_1) ";
                     Log.D(query);
                     var cmd = new MySqlCommand(query, dbCon.Connection);
                     cmd.Parameters.AddWithValue("@Email_1", Email_1);
@@ -419,6 +516,16 @@ namespace DatabaseConnection
 
 
         //--------------------------Section for insert SQL statements-------------------------------
+
+        /// <summary>
+        /// Insert a new user into the database
+        /// </summary>
+        /// <param name="Email"></param>
+        /// <param name="Password"></param>
+        /// <param name="Name"></param>
+        /// <param name="Bio"></param>
+        /// <param name="Profile"></param>
+        /// <returns></returns>
         public Boolean InsertUser(string Email, string Password, string Name, string Bio, string Profile)
         {
             if (dbCon.IsConnect())
