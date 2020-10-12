@@ -62,6 +62,7 @@ namespace Magnus {
                             bio = result.Item4,
                             profile = bitmap
                         });
+                        emailtoclientid.Remove(result.Item1);
                         emailtoclientid.Add(result.Item1, clientId);
                     }
                     else
