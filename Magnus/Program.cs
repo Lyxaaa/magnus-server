@@ -22,24 +22,6 @@ namespace Magnus {
             var directory = "C:\\images\\";
             Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
 
-            /*
-            try
-            {
-                Image img = Image.FromFile("C:\\images\\Mark.jpg");
-                //img.Save("C:\\images\\testResult1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
-                byte[] bitmap = imgToByteArray(img);
-
-                using (Image image = Image.FromStream(new MemoryStream(bitmap)))
-                {
-                    image.Save("C:\\images\\testResult2.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);  // Or Png
-                }
-
-            }
-            catch (Exception e) {
-                System.Console.WriteLine(e);
-            }
-            */
-
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
                 System.Console.WriteLine("got message");               
@@ -107,9 +89,14 @@ namespace Magnus {
                     else
                     {
                         byte[] bitmap = null;
-                        if (!String.IsNullOrEmpty(result.Item5)) {
+                        try
+                        {
                             Image img = Image.FromFile(result.Item5);
                             bitmap = imgToByteArray(img);
+                        }
+                        catch (Exception e)
+                        {
+                            System.Console.WriteLine(e);
                         }
                         server.SendToClient(clientId, new LoginResult()
                         {
