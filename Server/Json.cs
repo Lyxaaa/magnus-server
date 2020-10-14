@@ -261,7 +261,7 @@ namespace Magnus {
 
     }
 
-    public class AcceptChallenge : MessageResult
+    public class AcceptChallenge : Message
     {
         public new MsgType type = MsgType.AcceptChallenge;
         public bool Accept { get; set; }
@@ -297,6 +297,11 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.RetrieveOtherUsers;
         public string email { get; set; }
+        //user to limit the size of the return message not yet implamented in SQL
+        public int limit { get; set; } //this is the limit to the number of profiles retrived
+        public int offset { get; set; } //this is the offset used to retrive rows beyone the limit i.e. limit 50 offset 50 will retrive rows 51-100
+        //removed due to message length limit
+        //public byte[] profile { get; set; }
     }
 
     public class RetrieveOtherUsersResult : MessageResult
@@ -306,11 +311,7 @@ namespace Magnus {
         public string[] email { get; set; }
         public string[] name { get; set; }
         public string[] bio { get; set; }
-        //user to limit the size of the return message not yet implamented in SQL
-        public int limit { get; set; } //this is the limit to the number of profiles retrived
-        public int offset { get; set; } //this is the offset used to retrive rows beyone the limit i.e. limit 50 offset 50 will retrive rows 51-100
-        //removed due to message length limit
-        //public byte[] profile { get; set; }
+        
     }
 
     public enum MsgType : int {
