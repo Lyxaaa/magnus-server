@@ -10,12 +10,15 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
 
-namespace Magnus {
-    class Program {
+namespace Magnus
+{
+    class Program
+    {
 
         static object lockObj = new object();
 
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
             var database = new Database();
             var server = new Server(null, 2457);
             var playqueue = new List<Tuple<string, string>>();//cliantid, email
@@ -32,7 +35,7 @@ namespace Magnus {
 
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
-                System.Console.WriteLine("got message");               
+                System.Console.WriteLine("got message");
                 #region Login
                 if (Msg.TryCast(dataType, data, (int)MsgType.Login, out Login login))
                 {
@@ -50,7 +53,8 @@ namespace Magnus {
                     else if (result.Item2 == login.password)
                     {
                         byte[] bitmap = null;
-                        if (!String.IsNullOrEmpty(result.Item5)) {
+                        if (!String.IsNullOrEmpty(result.Item5))
+                        {
                             try
                             {
                                 Image img = Image.FromFile(result.Item5);
@@ -294,12 +298,12 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetMyFriendRequests, out GetMyFriendRequests getmyfriendrequests))
                 {
                     var result = database.GetUserRequestSent(getmyfriendrequests.email);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnemail = new List<String>();
                         var returnname = new List<String>();
                         var returnuserid = new List<String>();
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item3);
@@ -315,16 +319,6 @@ namespace Magnus {
 
                         });
                     }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new GetFriendsResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.GetMyFriendRequests
-                        });
-                    }
-                    else
                     {
                         server.SendToClient(clientId, new GetMyFriendRequestsResult()
                         {
@@ -339,12 +333,12 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriendsRequestingMe, out GetFriendsRequestingMe getfriendsrequestingme))
                 {
                     var result = database.GetUserRequestRecived(getfriendsrequestingme.email);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnemail = new List<String>();
                         var returnname = new List<String>();
                         var returnuserid = new List<String>();
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item3);
@@ -358,15 +352,6 @@ namespace Magnus {
                             userId = returnuserid.ToArray(),
                             name = returnname.ToArray()
 
-                        });
-                    }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new GetFriendsResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.GetFriendsRequestingMe
                         });
                     }
                     else
@@ -384,13 +369,13 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetFriends, out GetFriends getfriends))
                 {
                     var result = database.GetUserFriends(getfriends.email);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnemail = new List<String>();
                         var returnname = new List<String>();
                         var returnuserid = new List<String>();
                         var returnconversationid = new List<String>();
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item2);
@@ -409,15 +394,7 @@ namespace Magnus {
 
                         });
                     }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new GetFriendsResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.GetFriends
-                        });
-                    }
+
                     else
                     {
                         server.SendToClient(clientId, new GetFriendsResult()
@@ -458,11 +435,11 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.RetrieveMessages, out RetrieveMessages retrievemessages))
                 {
                     var result = database.GetMessages(retrievemessages.conversationId);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnchat = new List<Chat>();
                         var numberorerror = 0;
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             try
                             {
@@ -487,15 +464,6 @@ namespace Magnus {
                             chat = returnchat.ToArray(),
                             error = numberorerror.ToString()
 
-                        });
-                    }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new RetrieveMessagesResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.RetrieveMessages
                         });
                     }
                     else
@@ -591,14 +559,14 @@ namespace Magnus {
                         });
                     }
 
-                   
+
                 }
                 #endregion 
                 #region GetMatchHistory
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetMatchHistory, out GetMatchHistory getmatchhistory))
                 {
                     var result = database.GetUserMatchHistory(getmatchhistory.email_1);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnemail = new List<String>();
                         var returnuserid = new List<String>();
@@ -606,7 +574,7 @@ namespace Magnus {
                         var returnboard = new List<String>();
                         var returnended = new List<bool>();
                         var returnstartdate = new List<Int64>();
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             returnemail.Add(result[i].Item3);
                             returnuserid.Add(HashString(result[i].Item3));
@@ -624,15 +592,6 @@ namespace Magnus {
                             startDateTime = returnstartdate.ToArray(),
                             ended = returnended.ToArray()
 
-                        });
-                    }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new GetMatchHistoryResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.GetMatchHistory
                         });
                     }
                     else
@@ -798,7 +757,7 @@ namespace Magnus {
                                 callingType = MsgType.CreateMatch,
                                 error = "failed to find clientID for 1 or both users"
                             });
-                        }                   
+                        }
                     }
                 }
                 #endregion
@@ -814,23 +773,9 @@ namespace Magnus {
                     {
                         if (updateboard.White)
                         {
-                            for (int i = 0; i<64;i++) {
-                                if ((board[i] < 7 && board[i] > 0) || (oldboard[i] < 7 && oldboard[i] > 0))
-                                {
-                                    newboard += board[i].ToString();
-                                }
-                                else {
-                                    newboard += oldboard[i].ToString();
-                                }
-                                if (i<63) {
-                                    newboard += ",";
-                                }
-                            }
-                        }
-                        else {
                             for (int i = 0; i < 64; i++)
                             {
-                                if ((board[i] > 6) || (oldboard[i] >6))
+                                if ((board[i] < 7 && board[i] > 0) || (oldboard[i] < 7 && oldboard[i] > 0))
                                 {
                                     newboard += board[i].ToString();
                                 }
@@ -844,7 +789,25 @@ namespace Magnus {
                                 }
                             }
                         }
-                        database.UpdateMatch(updateboard.matchId,Match.Item3, newboard);
+                        else
+                        {
+                            for (int i = 0; i < 64; i++)
+                            {
+                                if ((board[i] > 6) || (oldboard[i] > 6))
+                                {
+                                    newboard += board[i].ToString();
+                                }
+                                else
+                                {
+                                    newboard += oldboard[i].ToString();
+                                }
+                                if (i < 63)
+                                {
+                                    newboard += ",";
+                                }
+                            }
+                        }
+                        database.UpdateMatch(updateboard.matchId, Match.Item3, newboard);
                         server.SendToClient(clientId, new BoardResult()
                         {
                             result = Result.Success,
@@ -852,7 +815,8 @@ namespace Magnus {
                             matchId = updateboard.matchId
                         });
                     }
-                    else {
+                    else
+                    {
                         server.SendToClient(clientId, new BoardResult()
                         {
                             result = Result.Invalid,
@@ -878,13 +842,13 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.RetrieveOtherUsers, out RetrieveOtherUsers retrieveotherusers))
                 {
                     var result = database.GetAllOtherUserProfile(retrieveotherusers.email, retrieveotherusers.search, retrieveotherusers.limit, retrieveotherusers.offset);
-                    if (result.Count >= 1)
+                    if (result != null)
                     {
                         var returnemail = new List<String>();
                         var returnname = new List<String>();
                         var returnuserid = new List<String>();
                         var returnbio = new List<String>();
-                        for (int i = 1; i < result.Count; i++)
+                        for (int i = 0; i < result.Count; i++)
                         {
                             returnemail.Add(result[i].Item1);
                             returnname.Add(result[i].Item2);
@@ -902,15 +866,6 @@ namespace Magnus {
 
                         });
                     }
-                    else if (result.Count == 0)
-                    {
-                        server.SendToClient(clientId, new GetFriendsResult()
-                        {
-                            result = Result.Failure,
-                            error = "zero results returned",
-                            callingType = MsgType.GetFriends
-                        });
-                    }
                     else
                     {
                         server.SendToClient(clientId, new GetFriendsResult()
@@ -925,7 +880,8 @@ namespace Magnus {
 
                 #endregion
                 #region Invalid
-                else {
+                else
+                {
                     server.SendToClient(clientId, new MessageResult()
                     {
                         result = Result.Invalid,
@@ -963,7 +919,7 @@ namespace Magnus {
 
             return new string(hash2);
         }
-        
+
         //convert image to bytearray
         public static byte[] imgToByteArray(Image img)
         {
@@ -973,6 +929,6 @@ namespace Magnus {
                 return mStream.ToArray();
             }
         }
-        
+
     }
 }

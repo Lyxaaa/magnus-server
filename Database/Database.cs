@@ -91,7 +91,10 @@ namespace DatabaseConnection
         /// should set limit and offset later
         /// should remove password but not worth the effort 
         /// </summary>
-        /// <param name="UserEmail"></param>
+        /// <param name="UserEmail">the email of the user to be excluded</param>
+        /// <param name="like">the name to be searched for in for ...like...  or %like% in SQL</param>
+        /// <param name="limit">used to limit the number or returns</param>
+        /// <param name="offser">used access rows not inside the initial limit be offseting the starting point</param>
         /// <returns>a list of tupples containing Email, Password, Name, Bio, profile(file location) all as strings</returns>
         public List<Tuple<string, string, string, string>> GetAllOtherUserProfile(string UserEmail, string like, int limit, int offset)
         {
@@ -132,7 +135,7 @@ namespace DatabaseConnection
 
         /// <summary>
         /// get a list of a users friends emails and names
-        /// TODO add Conversation ID's
+        /// TODO time allowing add Conversation ID's 
         /// </summary>
         /// <param name="UserEmail"></param>
         /// <returns>a list of tupples containing Email and name</returns>
@@ -218,7 +221,7 @@ namespace DatabaseConnection
         }
 
         /// <summary>
-        /// NOT IN USE
+        /// should be removed time allowing as this is an inelient way of getting this info as this field should just be added to getfriends
         /// </summary>
         /// <param name="UserEmail"></param>
         /// <returns></returns>
@@ -295,6 +298,7 @@ namespace DatabaseConnection
 
         /// <summary>
         /// retrive a users match history
+        /// todo add limit and offset
         /// </summary>
         /// <param name="UserEmail"></param>
         /// <returns></returns>
@@ -348,6 +352,7 @@ namespace DatabaseConnection
 
         /// <summary>
         /// returns all messages in a conversation in reverse cronological order (most recent to olders)
+        /// TODO add limit, offset and ability to get messages after specified time
         /// </summary>
         /// <param name="Conversation_ID"></param>
         /// <returns>a list of tuples containing Text, DateTime, Sender Email as strings</returns>
@@ -449,6 +454,7 @@ namespace DatabaseConnection
 
         /// <summary>
         /// NOT IN USE
+        /// feature of naming conversations not implamented 
         /// </summary>
         /// <param name="Conversation_ID"></param>
         /// <param name="NewName"></param>
@@ -487,10 +493,9 @@ namespace DatabaseConnection
         /// <summary>
         /// used to remove a user from their friend list
         /// Order not Important
-        /// NOT I USE
         /// </summary>
-        /// <param name="Email_1"></param>
-        /// <param name="Email_2"></param>
+        /// <param name="Email_1">Email</param>
+        /// <param name="Email_2">Email</param>
         /// <returns></returns>
         public Boolean RemoveFriend(string Email_1, string Email_2)
         {
@@ -566,6 +571,12 @@ namespace DatabaseConnection
             }
         }
 
+        /// <summary>
+        /// insert a friend request from user to another user
+        /// </summary>
+        /// <param name="FromEmail">sender email</param>
+        /// <param name="ToEmail">recipient email</param>
+        /// <returns></returns>
         public Boolean InsertFriendRequest(string FromEmail, string ToEmail)
         {
             if (dbCon.IsConnect())
@@ -594,6 +605,12 @@ namespace DatabaseConnection
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="RequestFromEmail"></param>
+        /// <param name="AcceptedEmail"></param>
+        /// <returns></returns>
         public Boolean InsertFriend(string RequestFromEmail, string AcceptedEmail)
         {
             if (dbCon.IsConnect())
