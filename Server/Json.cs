@@ -307,7 +307,7 @@ namespace Magnus {
 
     public class RetrieveOtherUsersResult : MessageResult
     {
-        public new MsgType type = MsgType.RetrieveUserProfileResult;
+        public new MsgType type = MsgType.RetrieveOtherUsersResult;
         public string[] userId { get; set; }
         public string[] email { get; set; }
         public string[] name { get; set; }
