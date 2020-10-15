@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magnus", "Magnus\Magnus.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{88E4B086-D50B-4123-A74D-E5D42B4CB15E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tangible", "Tangible\Tangible.csproj", "{8D2AAE80-E91B-458E-86C6-765D64E63C92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88E4B086-D50B-4123-A74D-E5D42B4CB15E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
