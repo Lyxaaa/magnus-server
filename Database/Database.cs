@@ -93,20 +93,29 @@ namespace DatabaseConnection
         /// </summary>
         /// <param name="UserEmail"></param>
         /// <returns>a list of tupples containing Email, Password, Name, Bio, profile(file location) all as strings</returns>
-        public List<Tuple<string, string, string, string>> GetAllOtherUserProfile(string UserEmail)
+        public List<Tuple<string, string, string, string>> GetAllOtherUserProfile(string UserEmail, string like, int limit, int offset)
         {
             string[] results = { "", "", "", "", "" };
             var myReturn = new List<Tuple<string, string, string, string>>();
             if (dbCon.IsConnect())
             {
+                
                 string query = "SELECT Email, Name, Bio, Profile_Pic FROM users WHERE Email  != @UserEmail";
+                if (!String.IsNullOrEmpty(like)) {
+                    query = query + " AND Name LIKE @Like";
+                }
+                query = query + " LIMIT " + limit+ " OFFSET "+ offset;
                 var cmd = new MySqlCommand(query, dbCon.Connection);
                 cmd.Parameters.AddWithValue("@UserEmail", UserEmail);
+                if (!String.IsNullOrEmpty(like))
+                {
+                    cmd.Parameters.AddWithValue("@Like", "%"+like+"%");
+                }
                 cmd.Prepare();
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    for (int i = 0; i < 5; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         if (!reader.IsDBNull(i))
                         {

@@ -22,6 +22,14 @@ namespace Magnus {
             var directory = "C:\\images\\";
             Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
 
+            /*
+             * some testing
+            var myresult = database.GetAllOtherUserProfile("test123", "M",1,1);
+            for (int i = 0; i < myresult.Count; i++) {
+            }
+            */
+
+
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
                 System.Console.WriteLine("got message");               
@@ -869,7 +877,7 @@ namespace Magnus {
                 #region RetrieveOtherUsers
                 else if (Msg.TryCast(dataType, data, (int)MsgType.RetrieveOtherUsers, out RetrieveOtherUsers retrieveotherusers))
                 {
-                    var result = database.GetAllOtherUserProfile(retrieveotherusers.email);
+                    var result = database.GetAllOtherUserProfile(retrieveotherusers.email, retrieveotherusers.search, retrieveotherusers.limit, retrieveotherusers.offset);
                     if (result.Count >= 1)
                     {
                         var returnemail = new List<String>();

@@ -297,6 +297,7 @@ namespace Magnus {
     {
         public new MsgType type = MsgType.RetrieveOtherUsers;
         public string email { get; set; }
+        public string search { get; set; }
         //user to limit the size of the return message not yet implamented in SQL
         public int limit { get; set; } //this is the limit to the number of profiles retrived
         public int offset { get; set; } //this is the offset used to retrive rows beyone the limit i.e. limit 50 offset 50 will retrive rows 51-100
