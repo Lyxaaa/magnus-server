@@ -620,7 +620,7 @@ namespace Magnus
                 {
                     if (playqueue.Count >= 1)
                     {
-                        var opponent = playqueue[1];
+                        var opponent = playqueue[0];
                         playqueue.Remove(opponent);
                         var result = database.InsertMatch(entermatchqueue.email, opponent);
                         //get conversation ID or create if non exist
