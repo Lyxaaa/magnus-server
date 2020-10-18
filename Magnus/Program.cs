@@ -618,7 +618,8 @@ namespace Magnus
                 #region EnterMatchQueue
                 else if (Msg.TryCast(dataType, data, (int)MsgType.EnterMatchQueue, out EnterMatchQueue entermatchqueue))
                 {
-                    if (playqueue.Count >= 1)
+                    
+                    if (playqueue.Count >= 1 && !playqueue.Contains(entermatchqueue.email))
                     {
                         var opponent = playqueue[0];
                         playqueue.Remove(opponent);
@@ -665,7 +666,10 @@ namespace Magnus
                     }
                     else
                     {
-                        playqueue.Add(entermatchqueue.email);
+                        if (!playqueue.Contains(entermatchqueue.email)) {
+                            playqueue.Add(entermatchqueue.email);
+                        }
+                        
 
                         server.SendToClient(clientId, new MessageResult()
                         {
