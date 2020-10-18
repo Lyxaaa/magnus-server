@@ -57,6 +57,7 @@ namespace Magnus
                         {
                             try
                             {
+                                System.Console.WriteLine(result.Item5);
                                 Image img = Image.FromFile(result.Item5);
                                 bitmap = imgToByteArray(img);
                             }
@@ -102,14 +103,17 @@ namespace Magnus
                     else
                     {
                         byte[] bitmap = null;
-                        try
+                        if (!String.IsNullOrEmpty(result.Item5))
                         {
-                            Image img = Image.FromFile(result.Item5);
-                            bitmap = imgToByteArray(img);
-                        }
-                        catch (Exception e)
-                        {
-                            System.Console.WriteLine(e);
+                            try
+                            {
+                                Image img = Image.FromFile(result.Item5);
+                                bitmap = imgToByteArray(img);
+                            }
+                            catch (Exception e)
+                            {
+                                System.Console.WriteLine(e);
+                            }
                         }
                         server.SendToClient(clientId, new LoginResult()
                         {
