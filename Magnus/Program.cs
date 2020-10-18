@@ -31,8 +31,7 @@ namespace Magnus
             for (int i = 0; i < myresult.Count; i++) {
             }
             */
-
-
+            
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
                 System.Console.WriteLine("got message");

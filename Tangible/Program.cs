@@ -8,24 +8,9 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using Magnus;
 
 namespace Tangible {
-    enum ChessPiece : byte {
-        None = 0,
-        BPawn = 1,
-        WPawn = 2,
-        BRook = 3,
-        WRook = 4,
-        BKnight = 5,
-        WKnight = 6,
-        BBishop = 7,
-        WBishop = 8,
-        BKing = 9,
-        WKing = 10,
-        BQueen = 11,
-        WQueen = 12
-    }
-
     // this is a single piece move
     class Move {
         public ChessPiece Piece { get; set; }
@@ -160,18 +145,18 @@ namespace Tangible {
 
         private static readonly Dictionary<ChessPiece, char> symbols = new Dictionary<ChessPiece, char>() {
             { ChessPiece.None    , ' ' },
-            { ChessPiece.BPawn   , 'P' },
-            { ChessPiece.WPawn   , 'p' },
-            { ChessPiece.BRook   , 'R' },
-            { ChessPiece.WRook   , 'r' },
-            { ChessPiece.BKnight , 'N' },
-            { ChessPiece.WKnight , 'n' },
-            { ChessPiece.BBishop , 'B' },
-            { ChessPiece.WBishop , 'b' },
-            { ChessPiece.BKing   , 'K' },
-            { ChessPiece.WKing   , 'k' },
-            { ChessPiece.BQueen  , 'Q' },
-            { ChessPiece.WQueen  , 'q' }
+            { ChessPiece.BlackPawn   , 'P' },
+            { ChessPiece.WhitePawn   , 'p' },
+            { ChessPiece.BlackRook   , 'R' },
+            { ChessPiece.WhiteRook   , 'r' },
+            { ChessPiece.BlackKnight , 'N' },
+            { ChessPiece.WhiteKnight , 'n' },
+            { ChessPiece.BlackBishop , 'B' },
+            { ChessPiece.WhiteBishop , 'b' },
+            { ChessPiece.BlackKing   , 'K' },
+            { ChessPiece.WhiteKing   , 'k' },
+            { ChessPiece.BlackQueen  , 'Q' },
+            { ChessPiece.WhiteQueen  , 'q' }
         };
 
         // resets the board state
@@ -180,28 +165,28 @@ namespace Tangible {
             for (int i = 0; i < SIZE; i++) {
                 switch (i) {
                     case 0:
-                        board[i] = ChessPiece.BRook;
+                        board[i] = ChessPiece.BlackRook;
                         break;
                     case 1:
-                        board[i] = ChessPiece.BKnight;
+                        board[i] = ChessPiece.BlackKnight;
                         break;
                     case 2:
-                        board[i] = ChessPiece.BBishop;
+                        board[i] = ChessPiece.BlackBishop;
                         break;
                     case 3:
-                        board[i] = ChessPiece.BQueen;
+                        board[i] = ChessPiece.BlackQueen;
                         break;
                     case 4:
-                        board[i] = ChessPiece.BKing;
+                        board[i] = ChessPiece.BlackKing;
                         break;
                     case 5:
-                        board[i] = ChessPiece.BBishop;
+                        board[i] = ChessPiece.BlackBishop;
                         break;
                     case 6:
-                        board[i] = ChessPiece.BKnight;
+                        board[i] = ChessPiece.BlackKnight;
                         break;
                     case 7:
-                        board[i] = ChessPiece.BRook;
+                        board[i] = ChessPiece.BlackRook;
                         break;
                     case 8:
                     case 9:
@@ -211,31 +196,31 @@ namespace Tangible {
                     case 13:
                     case 14:
                     case 15:
-                        board[i] = ChessPiece.BPawn;
+                        board[i] = ChessPiece.BlackPawn;
                         break;
                     case 63:
-                        board[i] = ChessPiece.WRook;
+                        board[i] = ChessPiece.WhiteRook;
                         break;
                     case 62:
-                        board[i] = ChessPiece.WKnight;
+                        board[i] = ChessPiece.WhiteKnight;
                         break;
                     case 61:
-                        board[i] = ChessPiece.WBishop;
+                        board[i] = ChessPiece.WhiteBishop;
                         break;
                     case 60:
-                        board[i] = ChessPiece.WKing;
+                        board[i] = ChessPiece.WhiteKing;
                         break;
                     case 59:
-                        board[i] = ChessPiece.WQueen;
+                        board[i] = ChessPiece.WhiteQueen;
                         break;
                     case 58:
-                        board[i] = ChessPiece.WBishop;
+                        board[i] = ChessPiece.WhiteBishop;
                         break;
                     case 57:
-                        board[i] = ChessPiece.WKnight;
+                        board[i] = ChessPiece.WhiteKnight;
                         break;
                     case 56:
-                        board[i] = ChessPiece.WRook;
+                        board[i] = ChessPiece.WhiteRook;
                         break;
                     case 55:
                     case 54:
@@ -245,7 +230,7 @@ namespace Tangible {
                     case 50:
                     case 49:
                     case 48:
-                        board[i] = ChessPiece.WPawn;
+                        board[i] = ChessPiece.WhitePawn;
                         break;
                     default:
                         board[i] = ChessPiece.None;

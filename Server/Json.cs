@@ -289,7 +289,6 @@ namespace Magnus {
         public new MsgType type = MsgType.BoardResult;
         public string matchId { get; set; }
         public string board { get; set; }
-
     }
 
     //added 11/10/2020
@@ -378,9 +377,10 @@ namespace Magnus {
         Unknown = int.MaxValue
     }
 
-    public enum BoardState : int
+    public enum ChessPiece : int
     {
-        Empty = 0,
+        None = 0,
+
         WhitePawn = 1,
 
         WhiteRook = 2,

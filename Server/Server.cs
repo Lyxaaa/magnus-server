@@ -2,13 +2,10 @@
 using Include.Util;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
-using static Include.Client;
 using static Magnus.MessageResult;
 using NetJ = Include.Json;
 using SocketType = Include.SocketType;
@@ -24,8 +21,8 @@ namespace Magnus {
         public delegate void OnReceive(string clientId, SocketType socketType, DataType dataType, object data);
         public OnReceive OnReceiveListener { get; set; }
 
-        public delegate void OnConnectedToRobot(string robotId);
-        public OnConnectedToRobot OnConnectedToRobotListener;
+        public delegate void OnDisconnect(string clientId);
+        public OnDisconnect OnDisconnectListener { get; set; }
 
         public IPEndPoint[] EndPoints { get; private set; }
         public int Port { get; private set; }
@@ -158,8 +155,11 @@ namespace Magnus {
                     client.OnReceiveListener += (type, protocol, data) => {
                         OnReceiveListener?.Invoke(client.id, type, protocol, data);
                     };
-                    client.OnDisconnectListener += () => { DisconnectClient(client.id); };
-                    client.Send(new MessageResult() {callingType = MsgType.Initialise , result = Result.Success, error = err });
+                    client.OnDisconnectListener += () => {
+                        DisconnectClient(client.id);
+                        OnDisconnectListener?.Invoke(client.id);
+                    };
+                    client.Send(new MessageResult() { callingType = MsgType.Initialise, result = Result.Success, error = err });
 
                 } else {
                     Log.D($"Server: failed to add client({client.id})");
