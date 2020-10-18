@@ -21,7 +21,8 @@ namespace Magnus
         {
             var database = new Database();
             var server = new Server(null, 2457);
-            var playqueue = new List<Tuple<string, string>>();//cliantid, email
+            var playqueue = new List<string>();//email
+
             var directory = "C:\\images\\";
             Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
 
@@ -56,6 +57,7 @@ namespace Magnus
                         {
                             try
                             {
+                                System.Console.WriteLine(result.Item5);
                                 Image img = Image.FromFile(result.Item5);
                                 bitmap = imgToByteArray(img);
                             }
@@ -101,14 +103,17 @@ namespace Magnus
                     else
                     {
                         byte[] bitmap = null;
-                        try
+                        if (!String.IsNullOrEmpty(result.Item5))
                         {
-                            Image img = Image.FromFile(result.Item5);
-                            bitmap = imgToByteArray(img);
-                        }
-                        catch (Exception e)
-                        {
-                            System.Console.WriteLine(e);
+                            try
+                            {
+                                Image img = Image.FromFile(result.Item5);
+                                bitmap = imgToByteArray(img);
+                            }
+                            catch (Exception e)
+                            {
+                                System.Console.WriteLine(e);
+                            }
                         }
                         server.SendToClient(clientId, new LoginResult()
                         {
@@ -611,9 +616,9 @@ namespace Magnus
                     {
                         var opponent = playqueue[1];
                         playqueue.Remove(opponent);
-                        var result = database.InsertMatch(entermatchqueue.email, opponent.Item2);
+                        var result = database.InsertMatch(entermatchqueue.email, opponent);
                         //get conversation ID or create if non exist
-                        var coversation = database.GetConversationsBetween(entermatchqueue.email, opponent.Item2);
+                        var coversation = database.GetConversationsBetween(entermatchqueue.email, opponent);
                         {
                             database.InsertConversation(creatematch.email_1, creatematch.email_2);
                             coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
@@ -626,23 +631,24 @@ namespace Magnus
                                 callingType = MsgType.EnterMatchQueue,
                                 matchId = result,
                                 conversationId = coversation,
-                                opponentemail = opponent.Item2,
+                                opponentemail = opponent,
                                 youremail = entermatchqueue.email
                             });
-
-                            server.SendToClient(opponent.Item1, new MatchFound()
+                            String opponentid;
+                            emailtoclientid.TryGetValue(opponent, out opponentid);
+                            server.SendToClient(opponentid, new MatchFound()
                             {
                                 result = Result.Success,
                                 callingType = MsgType.EnterMatchQueue,
                                 matchId = result,
                                 conversationId = coversation,
                                 opponentemail = entermatchqueue.email,
-                                youremail = opponent.Item2
+                                youremail = opponent
                             });
                         }
                         else
                         {
-                            server.SendToClient(opponent.Item1, new MatchFound()
+                            server.SendToClient(clientId, new MatchFound()
                             {
                                 result = Result.Failure,
                                 error = "something went wrong during matchmaking",
@@ -653,22 +659,24 @@ namespace Magnus
                     }
                     else
                     {
-                        playqueue.Add(Tuple.Create(clientId, entermatchqueue.email));
+                        playqueue.Add(entermatchqueue.email);
 
-                        server.SendToClient(clientId, new MatchFound()
+                        server.SendToClient(clientId, new MessageResult()
                         {
-                            result = Result.Pending,
-                            error = "uou are in the queue",
+                            result = Result.Success,
+                            error = "you are in the queue",
                             callingType = MsgType.EnterMatchQueue
                         });
-                        server.SendToClient(clientId, new MatchFound()
-                        {
-                            result = Result.Pending,
-                            error = "uou are in the queue",
-                            callingType = MsgType.EnterMatchQueue
-                        });
+
                     }
                 }
+                #endregion
+                #region ExitMatchQueue
+                else if (Msg.TryCast(dataType, data, (int)MsgType.ExitMatchQueue, out ExitMatchQueue exitmatchqueue))
+                {
+                    playqueue.Remove(exitmatchqueue.email);
+                }
+
                 #endregion
                 #region SendChallenge
                 else if (Msg.TryCast(dataType, data, (int)MsgType.SendChallenge, out SendChallenge sendchallenge))

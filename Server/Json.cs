@@ -244,6 +244,12 @@ namespace Magnus {
         public string email { get; set; }
     }
 
+    public class ExitMatchQueue : Message
+    {
+        public new MsgType type = MsgType.ExitMatchQueue;
+        public string email { get; set; }
+    }
+
     public class MatchFound : MessageResult
     {
         public new MsgType type = MsgType.MatchFound;
@@ -373,6 +379,9 @@ namespace Magnus {
         //added 11/10/2020
         RetrieveOtherUsers = 38,
         RetrieveOtherUsersResult = 39,
+
+        //18/10/2020
+        ExitMatchQueue = 40,
 
         Unknown = int.MaxValue
     }
