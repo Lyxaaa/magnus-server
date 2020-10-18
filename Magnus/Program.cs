@@ -32,7 +32,13 @@ namespace Magnus
             for (int i = 0; i < myresult.Count; i++) {
             }
             */
-            
+            server.OnDisconnectListener += (clientId) =>
+            {
+                foreach (var item in emailtoclientid.Where(kvp => kvp.Value == clientId).ToList())
+                {
+                    emailtoclientid.Remove(item.Key);
+                }
+            };
             server.OnReceiveListener += (clientId, socketType, dataType, data) =>
             {
                 System.Console.WriteLine("got message");
