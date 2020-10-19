@@ -318,6 +318,21 @@ namespace Magnus {
         
     }
 
+
+    public class MatchStart : MessageResult
+    {
+        public new MsgType type = MsgType.MatchStart;
+        public bool playeriswhite { get; set; }
+
+    }
+
+    public class EndMatch : MessageResult
+    {
+        public new MsgType type = MsgType.EndMatch;
+        public string matchId { get; set; }
+        public bool youwon { get; set; }
+    }
+
     public enum MsgType : int {
         Ack = 0,
         Heartbeat = 1,
@@ -382,6 +397,9 @@ namespace Magnus {
         ExitMatchQueue = 40,
         ByteClientProfileImage = 41,
         ByteUpdateProfileImage = 42,
+
+        MatchStart = 43,
+        EndMatch = 44,
 
         Unknown = int.MaxValue
     }

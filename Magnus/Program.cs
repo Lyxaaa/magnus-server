@@ -561,7 +561,7 @@ namespace Magnus {
 
                         server.SendToClient(clientId, new MessageResult() {
                             result = Result.Success,
-                            error = "opponent not logged in",
+                            error = "opponent logged in",
                             callingType = MsgType.SendChallenge,
                             type = MsgType.MessageResult
                         });
@@ -651,12 +651,24 @@ namespace Magnus {
                             }
                         }
                         database.UpdateMatch(updateboard.matchId, Match.Item3, newboard);
-                        server.SendToClient(clientId, new BoardResult() {
+                        Match = database.GetMatch(updateboard.matchId);
+                        emailtoclientid.TryGetValue(Match.Item5, out string id1);
+                        emailtoclientid.TryGetValue(Match.Item6, out string id2);
+
+                        server.SendToClient(id2, new BoardResult() {
                             result = Result.Success,
                             board = newboard,
                             matchId = updateboard.matchId
                         });
-                    } else {
+
+                        server.SendToClient(id2, new BoardResult()
+                        {
+                            result = Result.Success,
+                            board = newboard,
+                            matchId = updateboard.matchId
+                        });
+                    }
+                    else {
                         server.SendToClient(clientId, new BoardResult() {
                             result = Result.Invalid,
                             error = "invalid board state Recived"
@@ -668,11 +680,21 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.GetBoardState, out GetBoardState getboardstate)) {
                     var Match = database.GetMatch(getboardstate.matchId);
                     var boardstring = Match.Item4;
+
+
                     server.SendToClient(clientId, new BoardResult() {
                         result = Result.Success,
                         board = boardstring,
                         matchId = getboardstate.matchId
                     });
+
+
+                    //server.SendToClient(id2, new BoardResult()
+                    //{
+                    //    result = Result.Success,
+                    //    board = boardstring,
+                    //    matchId = getboardstate.matchId
+                    //});
                 }
                 #endregion
                 #region RetrieveOtherUsers
@@ -757,6 +779,33 @@ namespace Magnus {
                             type = MsgType.MessageResult
                         });
                     }
+
+                }
+
+                #endregion
+                #region EndMatch
+                else if (Msg.TryCast(dataType, data, (int)MsgType.EndMatch, out EndMatch endmatch))
+                {
+                    //end the match on the server
+                    var Match = database.GetMatch(endmatch.matchId);
+                    var success = database.UpdateMatch(endmatch.matchId, "true", Match.Item4);
+                    emailtoclientid.TryGetValue(Match.Item5, out string id1);
+                    emailtoclientid.TryGetValue(Match.Item6, out string id2);
+
+                    server.SendToClient(id2, new EndMatch()
+                    {
+                        result = Result.Success,
+                        matchId = updateboard.matchId,
+                        youwon = true
+                    });
+
+                    server.SendToClient(id2, new EndMatch()
+                    {
+                        result = Result.Success,
+                        matchId = updateboard.matchId,
+                        youwon = true
+                    });
+
 
                 }
 
