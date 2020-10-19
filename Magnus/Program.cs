@@ -1,6 +1,8 @@
 ﻿using DatabaseConnection;
+using Include;
 using Include.Util;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -20,9 +22,10 @@ namespace Magnus {
             var database = new Database();
             var server = new Server(null, 2457);
             var playqueue = new List<string>();//email
+            var keyAwaitedByValue = new ConcurrentDictionary<string, string>(); // keys are who we're waiting on, values are who's waiting, these are emails
 
             var directory = "C:\\images\\";
-            Dictionary<string, string> emailtoclientid = new Dictionary<string, string>();
+            ConcurrentDictionary<string, string> emailtoclientid = new ConcurrentDictionary<string, string>();
 
             /*
              * some testing
@@ -32,11 +35,15 @@ namespace Magnus {
             */
             server.OnDisconnectListener += (clientId) => {
                 foreach (var item in emailtoclientid.Where(kvp => kvp.Value == clientId).ToList()) {
-                    emailtoclientid.Remove(item.Key);
+                    emailtoclientid.TryRemove(item.Key, out _);
+
+                    foreach (var key in keyAwaitedByValue.Where(kvp => kvp.Value == item.Key))
+                        keyAwaitedByValue.TryRemove(key.Key, out _);
+                    keyAwaitedByValue.TryRemove(item.Key, out _);
                 }
             };
             server.OnReceiveListener += (clientId, socketType, dataType, data) => {
-                Log.I("got message");
+                // Log.I("got message");
                 #region Login
                 if (Msg.TryCast(dataType, data, (int)MsgType.Login, out Login login)) {
                     Log.D("login");
@@ -65,8 +72,8 @@ namespace Magnus {
                             userName = result.Item3,
                             bio = result.Item4
                         });
-                        emailtoclientid.Remove(result.Item1);
-                        emailtoclientid.Add(result.Item1, clientId);
+                        emailtoclientid.TryRemove(result.Item1, out _);
+                        emailtoclientid.TryAdd(result.Item1, clientId);
                     } else {
                         server.SendToClient(clientId, new LoginResult() {
                             result = Result.Failure,
@@ -83,8 +90,7 @@ namespace Magnus {
                             result = Result.Failure,
                             error = "invalid email or password"
                         });
-                    }
-                    else {
+                    } else {
                         byte[] bitmap = null;
                         if (!String.IsNullOrEmpty(result.Item5)) {
                             try {
@@ -415,10 +421,10 @@ namespace Magnus {
                     if (emailtoclientid.ContainsKey(creatematch.email_1) && emailtoclientid.ContainsKey(creatematch.email_2)) {
                         var result = database.InsertMatch(creatematch.email_1, creatematch.email_2);
                         //get conversation ID or create if non exist
-                        var coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
-                        if (coversation == "invalid") {
+                        var conversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                        if (conversation == "invalid") {
                             database.InsertConversation(creatematch.email_1, creatematch.email_2);
-                            coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                            conversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
                         }
                         if (!String.IsNullOrEmpty(result)) {
 
@@ -427,13 +433,13 @@ namespace Magnus {
                                 result = Result.Success,
                                 callingType = MsgType.CreateMatch,
                                 matchId = result,
-                                conversationId = coversation
+                                conversationId = conversation
                             });
                             server.SendToClient(emailtoclientid[creatematch.email_2], new CreateMatchResult() {
                                 result = Result.Success,
                                 callingType = MsgType.CreateMatch,
                                 matchId = result,
-                                conversationId = coversation
+                                conversationId = conversation
                             });
                         } else {
                             server.SendToClient(clientId, new CreateMatchResult() {
@@ -449,8 +455,6 @@ namespace Magnus {
                             error = "failed to find clientID for 1 or both users"
                         });
                     }
-
-
                 }
                 #endregion 
                 #region GetMatchHistory
@@ -491,23 +495,22 @@ namespace Magnus {
                 #endregion
                 #region EnterMatchQueue
                 else if (Msg.TryCast(dataType, data, (int)MsgType.EnterMatchQueue, out EnterMatchQueue entermatchqueue)) {
-
-                    if (playqueue.Count >= 1 && !playqueue.Contains(entermatchqueue.email)) {
+                    if (playqueue.Count > 0 && !playqueue.Contains(entermatchqueue.email)) {
                         var opponent = playqueue[0];
                         playqueue.Remove(opponent);
                         var result = database.InsertMatch(entermatchqueue.email, opponent);
                         //get conversation ID or create if non exist
-                        var coversation = database.GetConversationsBetween(entermatchqueue.email, opponent);
+                        var conversation = database.GetConversationsBetween(entermatchqueue.email, opponent);
                         {
-                            database.InsertConversation(creatematch.email_1, creatematch.email_2);
-                            coversation = database.GetConversationsBetween(creatematch.email_1, creatematch.email_2);
+                            database.InsertConversation(entermatchqueue.email, opponent);
+                            conversation = database.GetConversationsBetween(entermatchqueue.email, opponent);
                         }
-                        if (!String.IsNullOrEmpty(result)) {
+                        if (!string.IsNullOrEmpty(result)) {
                             server.SendToClient(clientId, new MatchFound() {
                                 result = Result.Success,
                                 callingType = MsgType.EnterMatchQueue,
                                 matchId = result,
-                                conversationId = coversation,
+                                conversationId = conversation,
                                 opponentemail = opponent,
                                 youremail = entermatchqueue.email
                             });
@@ -516,7 +519,7 @@ namespace Magnus {
                                 result = Result.Success,
                                 callingType = MsgType.EnterMatchQueue,
                                 matchId = result,
-                                conversationId = coversation,
+                                conversationId = conversation,
                                 opponentemail = entermatchqueue.email,
                                 youremail = opponent
                             });
@@ -543,11 +546,40 @@ namespace Magnus {
                     }
                 }
                 #endregion
+                #region AcceptMatch
+                else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptMatch, out AcceptMatch acceptMatch)) {
+                    if (acceptMatch.accept) {
+                        if (keyAwaitedByValue.ContainsKey(acceptMatch.email)) { // we found the game, lets start
+                            keyAwaitedByValue.TryGetValue(acceptMatch.email, out string value);
+
+                            emailtoclientid.TryGetValue(acceptMatch.email, out string client1);
+                            emailtoclientid.TryGetValue(value, out string client2);
+
+                            keyAwaitedByValue.TryRemove(acceptMatch.email, out _);
+
+                            server.SendToClient(client1, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Success });
+                            server.SendToClient(client2, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Success });
+                        } else { // we're waiting for our partner to accept
+                            keyAwaitedByValue.TryAdd(acceptMatch.opponentemail, acceptMatch.email);
+                            server.SendToClient(clientId, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Pending });
+                        }
+                    } else { // when either player doesn't accept, send back a message result: failure
+                        keyAwaitedByValue.TryRemove(acceptMatch.email, out _);
+
+                        var Match = database.GetMatch(acceptMatch.matchId);
+                        var success = database.UpdateMatch(acceptMatch.matchId, "true", Match.Item4);
+
+                        server.SendToClient(clientId, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Failure });
+
+                        if (emailtoclientid.TryGetValue(acceptMatch.opponentemail, out string opponent))
+                            server.SendToClient(opponent, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Failure });
+                    }
+                }
+                #endregion
                 #region ExitMatchQueue
                 else if (Msg.TryCast(dataType, data, (int)MsgType.ExitMatchQueue, out ExitMatchQueue exitmatchqueue)) {
                     playqueue.Remove(exitmatchqueue.email);
                 }
-
                 #endregion
                 #region SendChallenge
                 else if (Msg.TryCast(dataType, data, (int)MsgType.SendChallenge, out SendChallenge sendchallenge)) {
@@ -588,8 +620,6 @@ namespace Magnus {
                                 coversation = database.GetConversationsBetween(acceptchallenge.opponentemail, acceptchallenge.youremail);
                             }
                             if (!String.IsNullOrEmpty(result)) {
-
-
                                 server.SendToClient(emailtoclientid[acceptchallenge.opponentemail], new CreateMatchResult() {
                                     result = Result.Success,
                                     callingType = MsgType.CreateMatch,
@@ -661,14 +691,12 @@ namespace Magnus {
                             matchId = updateboard.matchId
                         });
 
-                        server.SendToClient(id2, new BoardResult()
-                        {
+                        server.SendToClient(id2, new BoardResult() {
                             result = Result.Success,
                             board = newboard,
                             matchId = updateboard.matchId
                         });
-                    }
-                    else {
+                    } else {
                         server.SendToClient(clientId, new BoardResult() {
                             result = Result.Invalid,
                             error = "invalid board state Recived"
@@ -732,13 +760,11 @@ namespace Magnus {
 
                 #endregion
                 #region ByteUpdateProfileImage
-                else if (ByteMsg.TryCast(dataType, data, (int)MsgType.ByteUpdateProfileImage, out byte[] bytes))
-                {
+                else if (ByteMsg.TryCast(dataType, data, (int)MsgType.ByteUpdateProfileImage, out byte[] bytes)) {
                     //get email address
                     // this is very inefficient but will work for now
                     String email = "empty";
-                    foreach (var item in emailtoclientid.Where(kvp => kvp.Value == clientId).ToList())
-                    {
+                    foreach (var item in emailtoclientid.Where(kvp => kvp.Value == clientId).ToList()) {
                         email = item.Key;
                     }
                     Log.D("updating profile Image");
@@ -756,23 +782,18 @@ namespace Magnus {
                         }
                     }
                     var prior = database.GetSelectUserProfile(email);
-                    
+
                     var result = database.UpdateUser(email, prior.Item2, prior.Item3, prior.Item4, profile);
                     Log.D("Database query result:" + result);
 
-                    if (result)
-                    {
-                        server.SendToClient(clientId, new MessageResult()
-                        {
+                    if (result) {
+                        server.SendToClient(clientId, new MessageResult() {
                             result = Result.Success,
                             callingType = MsgType.ByteUpdateProfileImage,
                             type = MsgType.MessageResult
                         });
-                    }
-                    else
-                    {
-                        server.SendToClient(clientId, new MessageResult()
-                        {
+                    } else {
+                        server.SendToClient(clientId, new MessageResult() {
                             result = Result.Failure,
                             error = "update failed see database log for details",
                             callingType = MsgType.ByteUpdateProfileImage,
@@ -784,40 +805,37 @@ namespace Magnus {
 
                 #endregion
                 #region EndMatch
-                else if (Msg.TryCast(dataType, data, (int)MsgType.EndMatch, out EndMatch endmatch))
-                {
+                else if (Msg.TryCast(dataType, data, (int)MsgType.EndMatch, out EndMatch endmatch)) {
                     //end the match on the server
                     var Match = database.GetMatch(endmatch.matchId);
                     var success = database.UpdateMatch(endmatch.matchId, "true", Match.Item4);
                     emailtoclientid.TryGetValue(Match.Item5, out string id1);
                     emailtoclientid.TryGetValue(Match.Item6, out string id2);
 
-                    server.SendToClient(id2, new EndMatch()
-                    {
+                    server.SendToClient(id2, new EndMatch() {
                         result = Result.Success,
                         matchId = updateboard.matchId,
                         youwon = true
                     });
-
-                    server.SendToClient(id2, new EndMatch()
-                    {
+                    server.SendToClient(id2, new EndMatch() {
                         result = Result.Success,
                         matchId = updateboard.matchId,
                         youwon = true
                     });
-
-
                 }
 
                 #endregion
-
                 #region Invalid
-                else
-                {
+                else {
+                    MsgType callingType = MsgType.Unknown;
+                    if (dataType == DataType.JSON) {
+                        callingType = (MsgType)((Msg)data).type;
+                    }
+
                     server.SendToClient(clientId, new MessageResult() {
                         result = Result.Invalid,
-                        error = "error or listener not implamanted ",
-                        callingType = MsgType.SendFriendRequest,
+                        error = "error or listener not implemented ",
+                        callingType = callingType,
                         type = MsgType.MessageResult
                     });
                 }
@@ -828,6 +846,15 @@ namespace Magnus {
 
             Console.ReadKey();
             server.End();
+        }
+
+        // returns null if game doesn't exist, otherwise, returns other player's email when given an email and match id
+        public static string GetOtherPlayersEmail(Database database, string matchId, string email) {
+            var match = database.GetMatch(matchId);
+            if (match == null) return null;
+            if (match.Item5 != email) return match.Item5;
+            if (match.Item6 != email) return match.Item6;
+            return null;
         }
 
         //hash for user id

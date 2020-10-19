@@ -218,6 +218,7 @@ namespace Magnus {
         public void SendToClient(string clientId, object data, Include.SocketType socketType = Include.SocketType.TCP, DataType dataType = DataType.JSON) {
             if (clients.TryGetValue(clientId, out Client client)) {
                 client.Send(data, socketType, dataType);
+                if (dataType == DataType.JSON && ((Message)data).type == (int)MsgType.Ack) return;
                 Log.D($"Server: replying to {clientId} with: {data}");
             }
         }

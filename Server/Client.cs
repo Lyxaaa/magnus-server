@@ -129,7 +129,8 @@ namespace Magnus {
                         msg = ((I.Message)data).message;
                         break;
                 }
-                Log.D($"Client: got message from {clientId}: {msg}");
+                if (protocol == DataType.JSON && ((I.Message)data).type == (int)MsgType.Heartbeat) return;
+                Log.D($"{clientId}: got message from {clientId}: {msg}");
             };
         }
     }

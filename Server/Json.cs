@@ -1,6 +1,5 @@
 ﻿using Include;
 using System;
-using System.Collections.Generic;
 using I = Include.Json;
 
 namespace Magnus {
@@ -45,15 +44,13 @@ namespace Magnus {
         public byte[] profile { get; set; }
     }
 
-    public class MessageResult : Message
-    {
+    public class MessageResult : Message {
         public new MsgType type = MsgType.MessageResult;
         public MsgType callingType { get; set; }
         public Result result { get; set; }
         public string error { get; set; }
 
-        public enum Result
-        {
+        public enum Result {
             Invalid = -1,
             Success = 0,
             Pending = 1,
@@ -61,8 +58,7 @@ namespace Magnus {
         }
     }
 
-    public class RegisterUser : Message
-    {
+    public class RegisterUser : Message {
         public new MsgType type = MsgType.RegisterUser;
         public string email { get; set; }
         public string password { get; set; }
@@ -70,31 +66,27 @@ namespace Magnus {
         public string bio { get; set; }
     }
 
-    public class UpdateUserProfile : Message
-    {
+    public class UpdateUserProfile : Message {
         public new MsgType type = MsgType.UpdateUserProfile;
         public string email { get; set; }
         public string name { get; set; }
         public string bio { get; set; }
     }
 
-    public class UpdateUserPassword : Message
-    {
+    public class UpdateUserPassword : Message {
         public new MsgType type = MsgType.UpdateUserPassword;
         public string email { get; set; }
         public string oldPassword { get; set; }
         public string newPassword { get; set; }
     }
 
-    public class SendFriendRequest : Message
-    {
+    public class SendFriendRequest : Message {
         public new MsgType type = MsgType.SendFriendRequest;
         public string fromEmail { get; set; }
         public string toEmail { get; set; }
     }
 
-    public class AcceptFriend : Message
-    {
+    public class AcceptFriend : Message {
         public new MsgType type = MsgType.AcceptFriend;
         public string fromEmail { get; set; }
         public string toEmail { get; set; }
@@ -105,8 +97,7 @@ namespace Magnus {
         public string conversationId { get; set; }
     }
 
-    public class GetMyFriendRequests : Message
-    {
+    public class GetMyFriendRequests : Message {
         public new MsgType type = MsgType.GetMyFriendRequests;
         public string email { get; set; }
     }
@@ -118,8 +109,7 @@ namespace Magnus {
         public string[] email { get; set; }
     }
 
-    public class GetFriendsRequestingMe : Message
-    {
+    public class GetFriendsRequestingMe : Message {
         public new MsgType type = MsgType.GetFriendsRequestingMe;
         public string email { get; set; }
     }
@@ -131,8 +121,7 @@ namespace Magnus {
         public string[] email { get; set; }
     }
 
-    public class GetFriends : Message
-    {
+    public class GetFriends : Message {
         public new MsgType type = MsgType.GetFriends;
         public string email { get; set; }
     }
@@ -145,16 +134,14 @@ namespace Magnus {
         public string[] conversationId { get; set; }
     }
 
-    public class SendMessage : Message
-    {
+    public class SendMessage : Message {
         public new MsgType type = MsgType.SendMessage;
         public string email { get; set; }
         public string text { get; set; }
         public string conversationId { get; set; }
     }
 
-    public class RetrieveMessages : Message
-    {
+    public class RetrieveMessages : Message {
         public new MsgType type = MsgType.RetrieveMessages;
         public string conversationId { get; set; }
         public Int64 dateTime { get; set; }
@@ -172,8 +159,7 @@ namespace Magnus {
         public Int64 dateTime { get; set; }
     }
 
-    public class RetrieveUserProfile : Message
-    {
+    public class RetrieveUserProfile : Message {
         public new MsgType type = MsgType.RetrieveUserProfile;
         public string email { get; set; }
     }
@@ -186,8 +172,7 @@ namespace Magnus {
         public string bio { get; set; }
     }
 
-    public class GetMatchDetails : Message
-    {
+    public class GetMatchDetails : Message {
         public new MsgType type = MsgType.GetMatchDetails;
         public string matchId { get; set; }
     }
@@ -204,28 +189,24 @@ namespace Magnus {
         public string ended { get; set; }
     }
 
-    public class CreateMatch : Message
-    {
+    public class CreateMatch : Message {
         public new MsgType type = MsgType.CreateMatch;
         public string email_1 { get; set; }
         public string email_2 { get; set; }
     }
 
-    public class CreateMatchResult : MessageResult
-    {
+    public class CreateMatchResult : MessageResult {
         public new MsgType type = MsgType.CreateMatchResult;
         public string matchId { get; set; }
         public string conversationId { get; set; }
     }
 
-    public class GetMatchHistory : Message
-    {
+    public class GetMatchHistory : Message {
         public new MsgType type = MsgType.GetMatchHistory;
         public string email_1 { get; set; }
     }
 
-    public class GetMatchHistoryResult : MessageResult
-    {
+    public class GetMatchHistoryResult : MessageResult {
         public new MsgType type = MsgType.GetMatchHistoryResult;
         public string[] userId { get; set; }
         public string[] email { get; set; }
@@ -236,20 +217,17 @@ namespace Magnus {
     }
 
     //added 27/09
-    public class EnterMatchQueue : Message
-    {
+    public class EnterMatchQueue : Message {
         public new MsgType type = MsgType.EnterMatchQueue;
         public string email { get; set; }
     }
 
-    public class ExitMatchQueue : Message
-    {
+    public class ExitMatchQueue : Message {
         public new MsgType type = MsgType.ExitMatchQueue;
         public string email { get; set; }
     }
 
-    public class MatchFound : MessageResult
-    {
+    public class MatchFound : MessageResult {
         public new MsgType type = MsgType.MatchFound;
         public string youremail { get; set; }
         public string opponentemail { get; set; }
@@ -257,47 +235,41 @@ namespace Magnus {
         public string conversationId { get; set; }
     }
 
-    public class SendChallenge : Message
-    {
+    public class SendChallenge : Message {
         public new MsgType type = MsgType.MatchFound;
         public string youremail { get; set; }
         public string opponentemail { get; set; }
 
     }
 
-    public class AcceptChallenge : Message
-    {
+    public class AcceptChallenge : Message {
         public new MsgType type = MsgType.AcceptChallenge;
         public bool Accept { get; set; }
         public string youremail { get; set; }
         public string opponentemail { get; set; }
 
     }
-    
-    public class UpdateBoard : Message
-    {
+
+    public class UpdateBoard : Message {
         public new MsgType type = MsgType.UpdateBoard;
         public string matchId { get; set; }
         public string board { get; set; }
         public bool White { get; set; }
     }
 
-    public class GetBoardState : Message
-    {
+    public class GetBoardState : Message {
         public new MsgType type = MsgType.GetBoardState;
         public string matchId { get; set; }
     }
 
-    public class BoardResult : MessageResult
-    {
+    public class BoardResult : MessageResult {
         public new MsgType type = MsgType.BoardResult;
         public string matchId { get; set; }
         public string board { get; set; }
     }
 
     //added 11/10/2020
-    public class RetrieveOtherUsers : Message
-    {
+    public class RetrieveOtherUsers : Message {
         public new MsgType type = MsgType.RetrieveOtherUsers;
         public string email { get; set; }
         public string search { get; set; }
@@ -308,38 +280,43 @@ namespace Magnus {
         //public byte[] profile { get; set; }
     }
 
-    public class RetrieveOtherUsersResult : MessageResult
-    {
+    public class RetrieveOtherUsersResult : MessageResult {
         public new MsgType type = MsgType.RetrieveOtherUsersResult;
         public string[] userId { get; set; }
         public string[] email { get; set; }
         public string[] name { get; set; }
         public string[] bio { get; set; }
-        
+
     }
 
 
-    public class MatchStart : MessageResult
-    {
+    public class MatchStart : MessageResult {
         public new MsgType type = MsgType.MatchStart;
         public bool playeriswhite { get; set; }
 
     }
 
-    public class EndMatch : MessageResult
-    {
+    public class EndMatch : MessageResult {
         public new MsgType type = MsgType.EndMatch;
         public string matchId { get; set; }
         public bool youwon { get; set; }
+    }
+
+    public class AcceptMatch : Message {
+        public new MsgType type = MsgType.AcceptMatch;
+        public string email { get; set; }
+        public string opponentemail { get; set; }
+        public string matchId { get; set; }
+        public bool accept { get; set; }
     }
 
     public enum MsgType : int {
         Ack = 0,
         Heartbeat = 1,
 
-        Disconnect = 2,   
-        Initialise = 3,		
-        InitialiseResult = 4,	
+        Disconnect = 2,
+        Initialise = 3,
+        InitialiseResult = 4,
 
         RegisterUser = 5,
         MessageResult = 6,
@@ -374,8 +351,8 @@ namespace Magnus {
         Login = 25,
         LoginResult = 26,
 
-        EnterMatchQueue = 27,	
-        MatchFound = 28,	   
+        EnterMatchQueue = 27,
+        MatchFound = 28,
         SendChallenge = 29,
 
         CreateMatch = 30,
@@ -400,12 +377,12 @@ namespace Magnus {
 
         MatchStart = 43,
         EndMatch = 44,
+        AcceptMatch = 45,
 
         Unknown = int.MaxValue
     }
 
-    public enum ChessPiece : int
-    {
+    public enum ChessPiece : int {
         None = 0,
 
         WhitePawn = 1,
