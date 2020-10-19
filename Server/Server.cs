@@ -225,8 +225,8 @@ namespace Magnus {
         public void SendToClient(string clientId, int identifier, byte[] data, Include.SocketType socketType = Include.SocketType.TCP) {
             byte[] id = BitConverter.GetBytes(identifier);
             byte[] send = new byte[data.Length + id.Length];
-            Array.Copy(id, 0, send, 0, send.Length);
-            Array.Copy(id, 0, send, send.Length, data.Length);
+            Array.Copy(id, 0, send, 0, id.Length);
+            Array.Copy(data, 0, send, id.Length, data.Length);
 
             if (clients.TryGetValue(clientId, out Client client)) {
                 client.Send(send, socketType, DataType.Bytes);
