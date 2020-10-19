@@ -814,12 +814,12 @@ namespace Magnus {
 
                     server.SendToClient(id2, new EndMatch() {
                         result = Result.Success,
-                        matchId = updateboard.matchId,
+                        matchId = endmatch.matchId,
                         youwon = true
                     });
                     server.SendToClient(id2, new EndMatch() {
                         result = Result.Success,
-                        matchId = updateboard.matchId,
+                        matchId = endmatch.matchId,
                         youwon = true
                     });
                 }
