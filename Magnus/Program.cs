@@ -168,7 +168,13 @@ namespace Magnus {
                 }
                 #endregion
                 #region UpdateUserPassword
+<<<<<<< HEAD
+                else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserPassword, out UpdateUserPassword updateuserpassword))
+                {
+
+=======
                 else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserPassword, out UpdateUserPassword updateuserpassword)) {
+>>>>>>> 0eb372d6ab0b1b67ce0ebd924f674989384919a7
                     var prior = database.GetSelectUserProfile(updateuserpassword.email);
                     if (updateuserpassword.oldPassword == prior.Item2) {
                         var result = database.UpdateUser(updateuserpassword.email, updateuserpassword.newPassword, prior.Item3, prior.Item4, prior.Item5);
