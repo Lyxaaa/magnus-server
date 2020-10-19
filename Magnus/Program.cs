@@ -52,7 +52,7 @@ namespace Magnus {
                             try {
                                 Log.D(result.Item5);
                                 Image img = Image.FromFile(result.Item5);
-                                bitmap = imgToByteArray(img);
+                                bitmap = ImgToByteArray(img);
                             } catch (Exception e) {
                                 Log.E(e.ToString());
                             }
@@ -88,7 +88,7 @@ namespace Magnus {
                         if (!String.IsNullOrEmpty(result.Item5)) {
                             try {
                                 Image img = Image.FromFile(result.Item5);
-                                bitmap = imgToByteArray(img);
+                                bitmap = ImgToByteArray(img);
                             } catch (Exception e) {
                                 Log.E(e.ToString());
                             }
@@ -743,7 +743,7 @@ namespace Magnus {
         }
 
         //convert image to bytearray
-        public static byte[] imgToByteArray(Image img) {
+        public static byte[] ImgToByteArray(Image img) {
             using (MemoryStream mStream = new MemoryStream()) {
                 img.Save(mStream, img.RawFormat);
                 return mStream.ToArray();
