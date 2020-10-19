@@ -720,19 +720,23 @@ namespace Magnus {
                         email = item.Key;
                     }
                     Log.D("updating profile Image");
+                    Log.D(email);
                     String profile = "";
                     if (bytes != null && bytes.Length > 0) {
                         profile = directory + HashString(email) + ".jpg";
+                        Log.D(profile);
                         using (Image image = Image.FromStream(new MemoryStream(bytes))) {
                             if (File.Exists(profile)) {
                                 File.Delete(profile);
                             }
                             image.Save(profile, System.Drawing.Imaging.ImageFormat.Jpeg);
+                            Log.D("Image saved?");
                         }
                     }
                     var prior = database.GetSelectUserProfile(email);
                     
                     var result = database.UpdateUser(email, prior.Item2, prior.Item3, prior.Item4, profile);
+                    Log.D("Database query result:" + result);
 
                     if (result)
                     {
