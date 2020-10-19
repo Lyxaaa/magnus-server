@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Magnus {
-    class ByteMsg {
+    public class ByteMsg {
         public static bool TryCast(DataType dataType, object data, int identifier, out byte[] bytes) {
             bytes = null;
             if (dataType == DataType.Bytes) {

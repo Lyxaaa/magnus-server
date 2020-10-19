@@ -10,6 +10,7 @@ using System.Text;
 using static Magnus.MessageResult;
 using Msg = Include.Json.Message;
 
+
 namespace Magnus {
     class Program {
 
@@ -62,8 +63,7 @@ namespace Magnus {
                             email = result.Item1,
                             uniqueId = HashString(result.Item1),
                             userName = result.Item3,
-                            bio = result.Item4,
-                            profile = bitmap
+                            bio = result.Item4
                         });
                         emailtoclientid.Remove(result.Item1);
                         emailtoclientid.Add(result.Item1, clientId);
@@ -83,7 +83,8 @@ namespace Magnus {
                             result = Result.Failure,
                             error = "invalid email or password"
                         });
-                    } else {
+                    }
+                    else {
                         byte[] bitmap = null;
                         if (!String.IsNullOrEmpty(result.Item5)) {
                             try {
@@ -98,9 +99,11 @@ namespace Magnus {
                             email = result.Item1,
                             uniqueId = HashString(result.Item1),
                             userName = result.Item3,
-                            bio = result.Item4,
-                            profile = bitmap
+                            bio = result.Item4
                         });
+                        if (bitmap != null) {
+                            server.SendToClient(clientId, (int)MsgType.ByteClientProfileImage, bitmap);
+                        }
                     }
                 }
                 #endregion
@@ -128,19 +131,20 @@ namespace Magnus {
                 #region UpdateUserProfile
                 else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserProfile, out UpdateUserProfile updateuserprofile)) {
                     Log.D("updating profile");
-                    String profile = "";
-                    if (updateuserprofile.profile != null && updateuserprofile.profile.Length > 0) {
-                        profile = directory + updateuserprofile.email.GetHashCode() + ".jpg";
-                        using (Image image = Image.FromStream(new MemoryStream(updateuserprofile.profile))) {
-                            if (File.Exists(profile)) {
-                                File.Delete(profile);
-                            }
-                            image.Save(profile, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        }
-                    }
+                    //String profile = "";
+                    //if (updateuserprofile.profile != null && updateuserprofile.profile.Length > 0) {
+                    //    profile = directory + updateuserprofile.email.GetHashCode() + ".jpg";
+                    //    using (Image image = Image.FromStream(new MemoryStream(updateuserprofile.profile))) {
+                    //        if (File.Exists(profile)) {
+                    //            File.Delete(profile);
+                    //        }
+                    //        image.Save(profile, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    //    }
+                    //}
                     var prior = database.GetSelectUserProfile(updateuserprofile.email);
                     var newName = updateuserprofile.name;
                     var newBio = updateuserprofile.bio;
+                    String profile = prior.Item5;
                     if (String.IsNullOrEmpty(newName)) {
                         newName = prior.Item3;
                     }
@@ -149,7 +153,7 @@ namespace Magnus {
                         newBio = prior.Item4;
                     }
 
-                    var result = database.UpdateUser(updateuserprofile.email, prior.Item2, newName, updateuserprofile.bio, profile);
+                    var result = database.UpdateUser(updateuserprofile.email, prior.Item2, newName, newBio, profile);
 
                     if (result) {
                         server.SendToClient(clientId, new MessageResult() {
@@ -168,13 +172,7 @@ namespace Magnus {
                 }
                 #endregion
                 #region UpdateUserPassword
-<<<<<<< HEAD
-                else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserPassword, out UpdateUserPassword updateuserpassword))
-                {
-
-=======
                 else if (Msg.TryCast(dataType, data, (int)MsgType.UpdateUserPassword, out UpdateUserPassword updateuserpassword)) {
->>>>>>> 0eb372d6ab0b1b67ce0ebd924f674989384919a7
                     var prior = database.GetSelectUserProfile(updateuserpassword.email);
                     if (updateuserpassword.oldPassword == prior.Item2) {
                         var result = database.UpdateUser(updateuserpassword.email, updateuserpassword.newPassword, prior.Item3, prior.Item4, prior.Item5);
@@ -711,8 +709,58 @@ namespace Magnus {
                 }
 
                 #endregion
+                #region ByteUpdateProfileImage
+                else if (ByteMsg.TryCast(dataType, data, (int)MsgType.ByteUpdateProfileImage, out byte[] bytes))
+                {
+                    //get email address
+                    // this is very inefficient but will work for now
+                    String email = "empty";
+                    foreach (var item in emailtoclientid.Where(kvp => kvp.Value == clientId).ToList())
+                    {
+                        email = item.Key;
+                    }
+                    Log.D("updating profile Image");
+                    String profile = "";
+                    if (bytes != null && bytes.Length > 0) {
+                        profile = directory + HashString(email) + ".jpg";
+                        using (Image image = Image.FromStream(new MemoryStream(bytes))) {
+                            if (File.Exists(profile)) {
+                                File.Delete(profile);
+                            }
+                            image.Save(profile, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        }
+                    }
+                    var prior = database.GetSelectUserProfile(email);
+                    
+                    var result = database.UpdateUser(email, prior.Item2, prior.Item3, prior.Item4, profile);
+
+                    if (result)
+                    {
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Success,
+                            callingType = MsgType.ByteUpdateProfileImage,
+                            type = MsgType.MessageResult
+                        });
+                    }
+                    else
+                    {
+                        server.SendToClient(clientId, new MessageResult()
+                        {
+                            result = Result.Failure,
+                            error = "update failed see database log for details",
+                            callingType = MsgType.ByteUpdateProfileImage,
+                            type = MsgType.MessageResult
+                        });
+                    }
+
+                }
+
+                #endregion
+
                 #region Invalid
-                else {
+                else
+                {
                     server.SendToClient(clientId, new MessageResult() {
                         result = Result.Invalid,
                         error = "error or listener not implamanted ",

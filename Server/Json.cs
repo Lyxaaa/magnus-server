@@ -76,7 +76,6 @@ namespace Magnus {
         public string email { get; set; }
         public string name { get; set; }
         public string bio { get; set; }
-        public byte[] profile { get; set; }
     }
 
     public class UpdateUserPassword : Message
@@ -185,7 +184,6 @@ namespace Magnus {
         public string email { get; set; }
         public string name { get; set; }
         public string bio { get; set; }
-        public byte[] profile { get; set; }
     }
 
     public class GetMatchDetails : Message
@@ -382,6 +380,8 @@ namespace Magnus {
 
         //18/10/2020
         ExitMatchQueue = 40,
+        ByteClientProfileImage = 41,
+        ByteUpdateProfileImage = 42,
 
         Unknown = int.MaxValue
     }
