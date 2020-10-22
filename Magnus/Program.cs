@@ -342,17 +342,17 @@ namespace Magnus {
                 else if (Msg.TryCast(dataType, data, (int)MsgType.SendMessage, out SendMessage sendmessage)) {
                     var result = database.InsertMessage(sendmessage.conversationId, sendmessage.email, sendmessage.text);
                     if (result) {
-                        server.SendToClient(clientId, new MessageResult() {
-                            result = Result.Success,
+                        server.SendToClient(clientId, new SendMessageResult() {
+                            result = SendMessageResult.Result.Success,
                             callingType = MsgType.SendMessage,
-                            type = MsgType.MessageResult
+                            type = MsgType.SendMessageResult
                         });
                     } else {
-                        server.SendToClient(clientId, new MessageResult() {
-                            result = Result.Failure,
-                            error = "friend request failed see database log for details",
+                        server.SendToClient(clientId, new SendMessageResult() {
+                            result = SendMessageResult.Result.Failure,
+                            error = "Sending message failed, see database log for details",
                             callingType = MsgType.SendMessage,
-                            type = MsgType.MessageResult
+                            type = MsgType.SendMessageResult
                         });
                     }
                 }

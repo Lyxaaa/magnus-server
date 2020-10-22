@@ -141,6 +141,21 @@ namespace Magnus {
         public string conversationId { get; set; }
     }
 
+    public class SendMessageResult : Message {
+        public new MsgType type = MsgType.SendMessageResult;
+        public MsgType callingType { get; set; }
+        public Result result { get; set; }
+        public string error { get; set; }
+
+        public enum Result
+        {
+            Invalid = -1,
+            Success = 0,
+            Pending = 1,
+            Failure = 2
+        }
+    }
+
     public class RetrieveMessages : Message {
         public new MsgType type = MsgType.RetrieveMessages;
         public string conversationId { get; set; }
@@ -338,46 +353,48 @@ namespace Magnus {
         GetFriendsResult = 17,
 
         SendMessage = 18,
-        RetrieveMessages = 19,
-        RetrieveMessagesResult = 20,
+        SendMessageResult = 19,
+        RetrieveMessages = 20,
+
+        RetrieveMessagesResult = 21,
 
 
-        RetrieveUserProfile = 21,
-        RetrieveUserProfileResult = 22,
+        RetrieveUserProfile = 22,
+        RetrieveUserProfileResult = 23,
 
-        GetMatchDetails = 23,
-        GetMatchDetailsResult = 24,
+        GetMatchDetails = 24,
+        GetMatchDetailsResult = 25,
 
-        Login = 25,
-        LoginResult = 26,
+        Login = 26,
+        LoginResult = 27,
 
-        EnterMatchQueue = 27,
-        MatchFound = 28,
-        SendChallenge = 29,
+        EnterMatchQueue = 28,
+        MatchFound = 29,
+        SendChallenge = 30,
 
-        CreateMatch = 30,
-        CreateMatchResult = 31,
+        CreateMatch = 31,
+        CreateMatchResult = 32,
 
-        GetMatchHistory = 32,
-        GetMatchHistoryResult = 33,
-        AcceptChallenge = 34,
+        GetMatchHistory = 33,
+        GetMatchHistoryResult = 34,
+        AcceptChallenge = 35,
 
-        UpdateBoard = 35,
-        GetBoardState = 36,
-        BoardResult = 37,
-
+        UpdateBoard = 36,
+        GetBoardState = 37,
+        BoardResult = 38,
         //added 11/10/2020
-        RetrieveOtherUsers = 38,
-        RetrieveOtherUsersResult = 39,
 
+        RetrieveOtherUsers = 39,
+        RetrieveOtherUsersResult = 40,
         //18/10/2020
-        ExitMatchQueue = 40,
-        ByteClientProfileImage = 41,
-        ByteUpdateProfileImage = 42,
 
-        MatchStart = 43,
-        EndMatch = 44,
-        AcceptMatch = 45,
+        ExitMatchQueue = 41,
+        ByteClientProfileImage = 42,
+        ByteUpdateProfileImage = 43,
+
+        MatchStart = 44,
+        EndMatch = 45,
+        AcceptMatch = 46,
 
         Unknown = int.MaxValue
     }
