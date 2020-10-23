@@ -685,7 +685,7 @@ namespace Magnus {
                         emailtoclientid.TryGetValue(Match.Item5, out string id1);
                         emailtoclientid.TryGetValue(Match.Item6, out string id2);
 
-                        server.SendToClient(id2, new BoardResult() {
+                        server.SendToClient(id1, new BoardResult() {
                             result = Result.Success,
                             board = newboard,
                             matchId = updateboard.matchId
@@ -715,14 +715,6 @@ namespace Magnus {
                         board = boardstring,
                         matchId = getboardstate.matchId
                     });
-
-
-                    //server.SendToClient(id2, new BoardResult()
-                    //{
-                    //    result = Result.Success,
-                    //    board = boardstring,
-                    //    matchId = getboardstate.matchId
-                    //});
                 }
                 #endregion
                 #region RetrieveOtherUsers
@@ -812,15 +804,16 @@ namespace Magnus {
                     emailtoclientid.TryGetValue(Match.Item5, out string id1);
                     emailtoclientid.TryGetValue(Match.Item6, out string id2);
 
+
                     server.SendToClient(id2, new EndMatch() {
                         result = Result.Success,
                         matchId = endmatch.matchId,
-                        youwon = true
+                        youwon = (id2!=clientId)
                     });
-                    server.SendToClient(id2, new EndMatch() {
+                    server.SendToClient(id1, new EndMatch() {
                         result = Result.Success,
                         matchId = endmatch.matchId,
-                        youwon = true
+                        youwon = (id1 != clientId)
                     });
                 }
 
