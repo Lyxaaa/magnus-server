@@ -698,8 +698,8 @@ namespace Magnus {
                         });
                     } else {
                         server.SendToClient(clientId, new BoardResult() {
-                            result = Result.Invalid,
-                            error = "invalid board state Recived"
+                            result = Result.Failure,
+                            error = "failed to update Board"
                         });
                     }
                 }
@@ -803,15 +803,20 @@ namespace Magnus {
                     var success = database.UpdateMatch(endmatch.matchId, "true", Match.Item4);
                     emailtoclientid.TryGetValue(Match.Item5, out string id1);
                     emailtoclientid.TryGetValue(Match.Item6, out string id2);
-
+                    var mResult = Result.Failure;
+                    if (success) {
+                        mResult = Result.Success;
+                    }
 
                     server.SendToClient(id2, new EndMatch() {
-                        result = Result.Success,
+                        result = mResult,
                         matchId = endmatch.matchId,
-                        youwon = (id2!=clientId)
+                        youwon = (id2!=clientId),
+
+
                     });
                     server.SendToClient(id1, new EndMatch() {
-                        result = Result.Success,
+                        result = mResult,
                         matchId = endmatch.matchId,
                         youwon = (id1 != clientId)
                     });
