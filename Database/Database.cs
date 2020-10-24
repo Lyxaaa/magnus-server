@@ -277,7 +277,7 @@ namespace DatabaseConnection
         /// <returns>the conversation ID as a string</returns>
         public string GetConversationsBetween(string Email_1, string Email_2)
         {
-            var myReturn = "invalid";
+            var myReturn = "";
             if (dbCon.IsConnect())
             {
                 string query = "SELECT Conversation_ID FROM in_conversation WHERE Email = @UserEmail_1 AND Conversation_ID IN (SELECT Conversation_ID FROM in_conversation WHERE Email = @UserEmail_2) LIMIT 1";
@@ -292,6 +292,16 @@ namespace DatabaseConnection
                 }
 
                 reader.Close();
+
+                if (String.IsNullOrEmpty(myReturn)) {
+                    if (InsertConversation(Email_1, Email_2)) {
+                        reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            myReturn = reader.GetString(0);
+                        }
+                    }
+                } 
             }
             return myReturn;
         }
@@ -633,6 +643,8 @@ namespace DatabaseConnection
                     cmd2.Parameters.AddWithValue("@AcceptedEmail", AcceptedEmail);
                     cmd2.Prepare();
                     var result2 = cmd2.ExecuteNonQuery();
+                    GetConversationsBetween(RequestFromEmail, AcceptedEmail); // this creates a conversation if one does not alread exist
+
                     if (result2 == 1) { return true; }
                     else { return false; }
                 }
