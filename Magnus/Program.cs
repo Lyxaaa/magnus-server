@@ -59,8 +59,10 @@ namespace Magnus {
                         if (!String.IsNullOrEmpty(result.Item5)) {
                             try {
                                 Log.D(result.Item5);
-                                Image img = Image.FromFile(result.Item5);
-                                bitmap = ImgToByteArray(img);
+                                using (Image img = Image.FromFile(result.Item5))
+                                {
+                                    bitmap = ImgToByteArray(img);
+                                }
                             } catch (Exception e) {
                                 Log.E(e.ToString());
                             }
@@ -94,8 +96,10 @@ namespace Magnus {
                         byte[] bitmap = null;
                         if (!String.IsNullOrEmpty(result.Item5)) {
                             try {
-                                Image img = Image.FromFile(result.Item5);
-                                bitmap = ImgToByteArray(img);
+                                using (Image img = Image.FromFile(result.Item5))
+                                {
+                                    bitmap = ImgToByteArray(img);
+                                }
                             } catch (Exception e) {
                                 Log.E(e.ToString());
                             }
