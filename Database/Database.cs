@@ -8,7 +8,7 @@ using MySql.Data;
 using MySql.Data.MySqlClient;
 
 /// <summary>
-///Author Mark Bird 43743050 for DECO7381
+///Author Mark Bird 43743050 for DECO7381F
 /// </summary>
 namespace DatabaseConnection
 {

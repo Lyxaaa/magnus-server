@@ -24,26 +24,28 @@ namespace Test {
             client.FilterMessageType(MsgType.Ack, true);
 
             Thread.Sleep(1000);
+            System.Console.WriteLine("add friend");
+            client.Send(new AcceptFriend() { fromEmail = "markbirdy92@gmail.com", toEmail = "test123" });
 
-            Image img = Image.FromFile("C:\\images\\Mark.jpg");
+            //Image img = Image.FromFile("C:\\images\\Mark.jpg");
             //img.Save("C:\\images\\testResult1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
-            byte[] bitmap = imgToByteArray(img);
-            System.Console.WriteLine(bitmap.ToString());
+            //byte[] bitmap = imgToByteArray(img);
+            //System.Console.WriteLine(bitmap.ToString());
 
-            System.Console.WriteLine("login");
-            client.Send(new Login() {email = "markbirdy92@gmail.com", password = "password" });
-
-
-            Thread.Sleep(1000);
-
-            System.Console.WriteLine("update");
-            client.Send(new UpdateUserProfile() { email = "markbirdy92@gmail.com", name = "Mark", bio = "lol lol", profile = null });
-
+            //System.Console.WriteLine("login");
+            //client.Send(new Login() {email = "markbirdy92@gmail.com", password = "password" });
 
 
             Thread.Sleep(1000);
-            System.Console.WriteLine("update2");
-            client.Send(new UpdateUserProfile() { email = "markbirdy92@gmail.com", name = "Mark", bio = "lol", profile = bitmap });
+
+            //System.Console.WriteLine("update");
+            //client.Send(new UpdateUserProfile() { email = "markbirdy92@gmail.com", name = "Mark", bio = "lol lol", profile = null });
+
+
+
+            Thread.Sleep(1000);
+            //System.Console.WriteLine("update2");
+            //client.Send(new UpdateUserProfile() { email = "markbirdy92@gmail.com", name = "Mark", bio = "lol", profile = bitmap });
             //System.Console.WriteLine("RegisterUser");
             //client.Send(new RegisterUser() { email = "thisisatest", password = "1234", name = "Mark", bio = "lol"});
 
