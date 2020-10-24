@@ -229,7 +229,6 @@ namespace Magnus {
                 #region AcceptFriend
                 else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptFriend, out AcceptFriend acceptfriend)) {
                     var result = database.InsertFriend(acceptfriend.fromEmail, acceptfriend.toEmail);
-                    database.InsertConversation(acceptfriend.fromEmail, acceptfriend.toEmail);
                     var id = database.GetConversationsBetween(acceptfriend.fromEmail, acceptfriend.toEmail);
                     if (result) {
                         server.SendToClient(clientId, new AcceptFriendResult() {
