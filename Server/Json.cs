@@ -177,6 +177,7 @@ namespace Magnus {
     public class RetrieveUserProfile : Message {
         public new MsgType type = MsgType.RetrieveUserProfile;
         public string email { get; set; }
+        public int imageRequestId { get; set; }
     }
 
     public class RetrieveUserProfileResult : MessageResult {

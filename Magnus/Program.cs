@@ -112,7 +112,7 @@ namespace Magnus {
                             bio = result.Item4
                         });
                         if (bitmap != null) {
-                            server.SendToClient(clientId, (int)MsgType.ByteClientProfileImage, bitmap);
+                            server.SendToClient(clientId, retrieveuserprofile.imageRequestId, bitmap);
                         }
                     }
                 }
