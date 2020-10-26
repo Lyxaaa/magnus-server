@@ -104,11 +104,11 @@ namespace Magnus {
                                 Log.E(e.ToString());
                             }
                         }
-                        server.SendToClient(clientId, new LoginResult() {
+                        server.SendToClient(clientId, new RetrieveUserProfileResult() {
                             result = Result.Success,
                             email = result.Item1,
-                            uniqueId = HashString(result.Item1),
-                            userName = result.Item3,
+                            userId = HashString(result.Item1),
+                            name = result.Item3,
                             bio = result.Item4
                         });
                         if (bitmap != null) {

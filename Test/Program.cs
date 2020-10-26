@@ -25,7 +25,7 @@ namespace Test {
 
             Thread.Sleep(1000);
             System.Console.WriteLine("add friend");
-            client.Send(new AcceptFriend() { fromEmail = "oscarmahon@hotmail.com", toEmail = "user2" });
+            client.Send(new AcceptFriend() { fromEmail = "oscarmahon@hotmail.com", toEmail = "user3" });
 
             //Image img = Image.FromFile("C:\\images\\Mark.jpg");
             //img.Save("C:\\images\\testResult1.jpg", System.Drawing.Imaging.ImageFormat.Jpeg);

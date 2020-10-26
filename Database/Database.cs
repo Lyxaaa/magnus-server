@@ -377,7 +377,7 @@ namespace DatabaseConnection
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1), reader.GetString(1)));
+                    myReturn.Add(Tuple.Create(reader.GetString(0), reader.GetString(1), reader.GetString(2)));
                 }
 
                 reader.Close();
