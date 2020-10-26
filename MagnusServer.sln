@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tangible", "Tangible\Tangible.csproj", "{8D2AAE80-E91B-458E-86C6-765D64E63C92}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRSode", "QRSode\QRSode.csproj", "{AF3AE131-DBF8-4E13-903A-8D494685CEC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D2AAE80-E91B-458E-86C6-765D64E63C92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF3AE131-DBF8-4E13-903A-8D494685CEC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF3AE131-DBF8-4E13-903A-8D494685CEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF3AE131-DBF8-4E13-903A-8D494685CEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF3AE131-DBF8-4E13-903A-8D494685CEC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
