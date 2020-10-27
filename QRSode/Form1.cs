@@ -73,15 +73,18 @@ namespace QRSode
             }
         }
 
-        private void ApplyMultiObjectDetectionTM(float threshold = 0.1f)
+        private void ApplyMultiObjectDetectionTM(float threshold = 0.2f)
         {
             try
             {
                 //var imgScene = imgList["Input"].Clone();
                 var imgScene = new Bitmap(pictureBox1.Image).ToImage<Bgr, byte>();
                 //var template = new Bitmap(pictureBox1.Image).ToImage<Bgr, byte>();
-                var template = new Bitmap(pictureBox2.Image).ToImage<Bgr, byte>();
-
+                //var template = new Bitmap(pictureBox2.Image).ToImage<Bgr, byte>();
+                String path2 = "C:\\images\\board\\test2.png";
+                
+                imgScene.Save(path2);
+                /*
 
                 Mat imgOut = new Mat();
                 CvInvoke.MatchTemplate(imgScene, template, imgOut, Emgu.CV.CvEnum.TemplateMatchingType.Sqdiff);
@@ -107,7 +110,12 @@ namespace QRSode
                     matches[maxLoc.Y, maxLoc.X] = 0.5;
                 } while (minValue <= threshold);
 
-                pictureBox1.Image = imgScene.AsBitmap();
+                pictureBox3.Image = imgScene.AsBitmap();
+                String path = "C:\\images\\board\\test.png";
+                imgScene.Save(path);
+                */
+
+
             }
             catch (Exception ex)
             {
@@ -137,6 +145,11 @@ namespace QRSode
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ApplyMultiObjectDetectionTM();
         }
     }
 }
