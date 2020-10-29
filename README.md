@@ -16,9 +16,18 @@ MySQL Database (https://gitlab.com/segfault3801/magnusserver/-/blob/master/Datab
 SmartPhone at Android 21.0 (Lollipop) or above with ADB enabled or an Intel-based machine with virtualisation enabled  
 
 1. Start `Apache` and `MySQL` modules in XAMPP
-2. Run Program.cs in MagnusServer/Magnus
-3. Install Magnus Mobile Application on desired suitable device through Android Studio
-4. Open Application on device and begin - Registration in-app is required
+2. Set up database (See Below)
+3. Run Program.cs in MagnusServer/Magnus
+4. Install Magnus Mobile Application on desired suitable device through Android Studio
+5. Open Application on device and begin - Registration in-app is required
+
+## Database Setup
+
+1. Head to http://localhost/phpmyadmin
+2. Create New Table with Name `deco7381_build`
+3. Go to SQL tab
+4. Paste `Database Injection` MySQL Queries
+5. Press Go
 
 ## Authors
 
