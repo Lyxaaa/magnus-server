@@ -68,6 +68,7 @@ namespace DatabaseConnection
             {
                 string query = "SELECT matches.Match_ID, Start_DateTime, Ended, Last_Board_State, U1.Email, U2.Email FROM matches, match_between AS U1, match_between AS U2 WHERE matches.Match_ID  = " + Match_ID + " AND matches.Match_ID = U1.Match_ID AND U2.Match_ID = matches.Match_ID AND U1.Email > U2.Email";
                 var cmd = new MySqlCommand(query, dbCon.Connection);
+                Console.WriteLine(query);
                 var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {

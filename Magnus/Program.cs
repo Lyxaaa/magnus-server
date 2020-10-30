@@ -230,7 +230,7 @@ namespace Magnus {
                 }
 
                 #endregion
-                #region AcceptFriend
+                #region AcceptFriend    
                 else if (Msg.TryCast(dataType, data, (int)MsgType.AcceptFriend, out AcceptFriend acceptfriend)) {
                     var result = database.InsertFriend(acceptfriend.fromEmail, acceptfriend.toEmail);
                     var id = database.GetConversationsBetween(acceptfriend.fromEmail, acceptfriend.toEmail);
@@ -563,6 +563,8 @@ namespace Magnus {
 
                             server.SendToClient(client1, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Success });
                             server.SendToClient(client2, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Success });
+                            server.SendToClient(client1, new MatchStart() { playeriswhite = true, result = Result.Success });
+                            server.SendToClient(client2, new MatchStart() { playeriswhite = false, result = Result.Success });
                         } else { // we're waiting for our partner to accept
                             keyAwaitedByValue.TryAdd(acceptMatch.opponentemail, acceptMatch.email);
                             server.SendToClient(clientId, new MessageResult() { callingType = MsgType.AcceptMatch, result = Result.Pending });
@@ -660,52 +662,54 @@ namespace Magnus {
                     var oldboardstring = Match.Item4;
                     var oldboard = oldboardstring.Split(',').Select(Int32.Parse).ToList();
                     var newboard = "";
-                    if (board.Count == 64) {
-                        if (updateboard.White) {
-                            for (int i = 0; i < 64; i++) {
-                                if ((board[i] < 7 && board[i] > 0) || (oldboard[i] < 7 && oldboard[i] > 0)) {
-                                    newboard += board[i].ToString();
-                                } else {
-                                    newboard += oldboard[i].ToString();
-                                }
-                                if (i < 63) {
-                                    newboard += ",";
-                                }
-                            }
-                        } else {
-                            for (int i = 0; i < 64; i++) {
-                                if ((board[i] > 6) || (oldboard[i] > 6)) {
-                                    newboard += board[i].ToString();
-                                } else {
-                                    newboard += oldboard[i].ToString();
-                                }
-                                if (i < 63) {
-                                    newboard += ",";
-                                }
-                            }
-                        }
-                        database.UpdateMatch(updateboard.matchId, Match.Item3, newboard);
+                    //if (board.Count == 64) {
+                        //if (updateboard.White) {
+                        //    for (int i = 0; i < 64; i++) {
+                        //        if ((board[i] < 7 && board[i] > 0) || (oldboard[i] < 7 && oldboard[i] > 0)) {
+                        //            newboard += board[i].ToString();
+                        //        } else {
+                        //            newboard += oldboard[i].ToString();
+                        //        }
+                        //        if (i < 63) {
+                        //            newboard += ",";
+                        //        }
+                        //    }
+                        //} else {
+                        //    for (int i = 0; i < 64; i++) {
+                        //        if ((board[i] > 6) || (oldboard[i] > 6)) {
+                        //            newboard += board[i].ToString();
+                        //        } else {
+                        //            newboard += oldboard[i].ToString();
+                        //        }
+                        //        if (i < 63) {
+                        //            newboard += ",";
+                        //        }
+                        //    }
+                        //}
+                        database.UpdateMatch(updateboard.matchId, Match.Item3, updateboard.board);
                         Match = database.GetMatch(updateboard.matchId);
                         emailtoclientid.TryGetValue(Match.Item5, out string id1);
                         emailtoclientid.TryGetValue(Match.Item6, out string id2);
 
+                        Console.WriteLine("Sending BoardResult");
                         server.SendToClient(id1, new BoardResult() {
                             result = Result.Success,
-                            board = newboard,
+                            board = updateboard.board,
                             matchId = updateboard.matchId
                         });
 
                         server.SendToClient(id2, new BoardResult() {
                             result = Result.Success,
-                            board = newboard,
+                            board = updateboard.board,
                             matchId = updateboard.matchId
                         });
-                    } else {
-                        server.SendToClient(clientId, new BoardResult() {
-                            result = Result.Failure,
-                            error = "failed to update Board"
-                        });
-                    }
+                    //} else {
+                    //    Console.WriteLine("Failed to Update Board");
+                    //    server.SendToClient(clientId, new BoardResult() {
+                    //        result = Result.Failure,
+                    //        error = "failed to update Board"
+                    //    });
+                    //}
                 }
                 #endregion
                 #region GetBoardState
