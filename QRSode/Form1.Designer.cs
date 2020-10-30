@@ -42,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.tempbtn = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.nextbtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -108,9 +109,9 @@
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(777, 57);
+            this.pictureBox3.Location = new System.Drawing.Point(823, 62);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(644, 506);
+            this.pictureBox3.Size = new System.Drawing.Size(250, 200);
             this.pictureBox3.TabIndex = 6;
             this.pictureBox3.TabStop = false;
             // 
@@ -153,11 +154,22 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.detectbtn_Click);
             // 
+            // nextbtn
+            // 
+            this.nextbtn.Location = new System.Drawing.Point(930, 269);
+            this.nextbtn.Name = "nextbtn";
+            this.nextbtn.Size = new System.Drawing.Size(75, 23);
+            this.nextbtn.TabIndex = 11;
+            this.nextbtn.Text = "Next";
+            this.nextbtn.UseVisualStyleBackColor = true;
+            this.nextbtn.Click += new System.EventHandler(this.nextbtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1383, 761);
+            this.Controls.Add(this.nextbtn);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tempbtn);
             this.Controls.Add(this.label3);
@@ -197,6 +209,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button tempbtn;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button nextbtn;
     }
 }
 

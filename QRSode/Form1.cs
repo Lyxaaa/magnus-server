@@ -26,6 +26,8 @@ namespace QRSode
     public partial class Form1 : Form
     {
         private Image<Hls, byte> template;
+        private int picindex = 0;
+        Bitmap[] tiles;
         public Form1()
         {
             InitializeComponent();
@@ -104,7 +106,7 @@ namespace QRSode
                 System.Drawing.Imaging.PixelFormat format = imgbitmap.PixelFormat;
                 int twidth = imgbitmap.Width/8;
                 int theight = imgbitmap.Height/8;
-                Bitmap[] tiles = new Bitmap[64];
+                tiles = new Bitmap[64];
                 for (int i = 0; i < 8; i++)
                 {
                     for (int j = 0; j < 8; j++)
@@ -118,7 +120,7 @@ namespace QRSode
                 }
 
                 for (int i = 0; i < tiles.Length; i++) {
-                    var tile = tiles[i].ToImage<Hls, byte>();
+                    var tile = tiles[i].ToImage<Bgr, byte>();
 
                     Mat imgOut = new Mat();
                     
@@ -149,18 +151,23 @@ namespace QRSode
                         CvInvoke.Rectangle(tile, r, new MCvScalar(255, 0, 0), 1);
                         matches[minLoc.Y, minLoc.X] = threshold + 1;
                         matches[maxLoc.Y, maxLoc.X] = threshold + 1;
-                        txtQrCode.Text += "tile: " + i + " Sqdiff:" + minValue + System.Environment.NewLine;
+                        txtQrCode.Text += "Yes tile: " + i + " Sqdiff:" + minValue + System.Environment.NewLine;
+                    }
+                    else {
+                        txtQrCode.Text += "No tile: " + i + " Sqdiff:" + minValue + System.Environment.NewLine;
                     }
                     //tile.Save("C:\\images\\board\\SatTile_matched_" + i + "_" + timeStamp + ".png");
+                    tiles[i] = tile.ToBitmap();
                     tile.Save("C:\\images\\board\\SatTile_matched_" + i + ".png");
 
                 }
 
 
-                
+
 
                 //pictureBox3.Image = imgScene.AsBitmap();
-                pictureBox3.Image = tiles[10];
+                picindex = 0;
+                pictureBox3.Image = tiles[picindex];
                 timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
                 String path2 = "C:\\images\\board\\match_" + timeStamp + ".png";
                 imgScene.Save(path2);
@@ -205,6 +212,12 @@ namespace QRSode
         private void txtQrCode_TextChanged(object sender, EventArgs e)
         {
             
+        }
+
+        private void nextbtn_Click(object sender, EventArgs e)
+        {
+            picindex = (picindex + 1) % 64;
+            pictureBox3.Image = tiles[picindex];
         }
     }
 }
