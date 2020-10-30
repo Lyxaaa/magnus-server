@@ -655,7 +655,7 @@ namespace Tangible {
              (13, 8),
              (14, 8),
              };
-            board.PrintPath(pathTest);
+            //board.PrintPath(pathTest);
 
             bool exit = false;
             do {
@@ -711,7 +711,11 @@ namespace Tangible {
                         break;
                     case "move":
                         try {
-                            if (splt.Length == 4) {
+                            if (splt.Length == 1) {
+
+                                MovePath(serialPort, 13, 13);
+                                WaitForEnd(serialPort);
+                            } else if (splt.Length == 4) {
                                 bool fast = bool.Parse(splt[3]);
                                 int x = int.Parse(splt[1]);
                                 int y = int.Parse(splt[2]);
@@ -736,7 +740,16 @@ namespace Tangible {
                                 if (splt[1] != "from" && splt[1] != "From") throw new Exception();
                                 if (splt[4] != "to" && splt[4] != "To") throw new Exception();
 
-
+                                MovePath(serialPort, 0, 0);
+                                WaitForEnd(serialPort);
+                                MovePath(serialPort, 15, 0);
+                                WaitForEnd(serialPort);
+                                MovePath(serialPort, 15, 17);
+                                WaitForEnd(serialPort);
+                                MovePath(serialPort, 0, 17);
+                                WaitForEnd(serialPort);
+                                MovePath(serialPort, 0, 0);
+                                WaitForEnd(serialPort);
 
                             } else {
                                 throw new Exception();
@@ -803,14 +816,19 @@ namespace Tangible {
         private static void MotorsOff(SerialPort serialPort) {
             SerialWrite(serialPort, "M84");
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serialPort"></param>
+        /// <param name="x">min is 1, max is 15</param>
+        /// <param name="y">min is 1, max is 17, the discard zone</param>
         private static void MovePath(SerialPort serialPort, int x, int y) {
             bool error = false;
-            if (x <= 1) {
+            if (x <= 1 && x >= 15) {
                 Console.WriteLine($"x bad: {x}");
                 error = true;
             }
-            if (y <= 1) {
+            if (y <= 1 && x >= 17) {
                 Console.WriteLine($"y bad: {y}");
                 error = true;
             }
@@ -818,7 +836,9 @@ namespace Tangible {
 
             x--;
             y--;
-            SerialWrite(serialPort, $"G1 X{66.8 * (x / 14f)} Y{66.8 * (y / 17f)}");
+
+            SerialWrite(serialPort, "G1 F5000");
+            SerialWrite(serialPort, $"G1 X{66.8 * (x / 14f)} Y{76.34 * (y / 16f)}");
         }
 
         private static void MoveSquare(SerialPort serialPort, int x, int y, bool fast = true) {
