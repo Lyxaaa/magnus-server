@@ -25,6 +25,7 @@ namespace QRSode
 {
     public partial class Form1 : Form
     {
+        private Image<Hls, byte> template;
         public Form1()
         {
             InitializeComponent();
@@ -59,11 +60,13 @@ namespace QRSode
             videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[cboCamera.SelectedIndex].MonikerString);
             videoCaptureDevice.NewFrame += FinalFrame_NewFrame;
             videoCaptureDevice.Start();
-            timer1.Start();
+            //timer was used for QR code reading
+            //timer1.Start();
         }
 
         private void timer1_Tick_1(object sender, EventArgs e)
         {
+            /* old code for barcode reading
             BarcodeReader Reader = new BarcodeReader();
             if (((Bitmap)pictureBox1.Image) != null)
             {
@@ -71,49 +74,79 @@ namespace QRSode
                 if (result != null)
                     txtQrCode.Text = result.ToString();
             }
+            */
         }
 
-        private void ApplyMultiObjectDetectionTM(float threshold = 0.2f)
+        private void ApplyMultiObjectDetectionTM(float threshold = 6000000f)
         {
             try
             {
                 //var imgScene = imgList["Input"].Clone();
-                var imgScene = new Bitmap(pictureBox1.Image).ToImage<Bgr, byte>();
+                var imgScene = new Bitmap(pictureBox1.Image).ToImage<Hls, byte>();
                 //var template = new Bitmap(pictureBox1.Image).ToImage<Bgr, byte>();
                 //var template = new Bitmap(pictureBox2.Image).ToImage<Bgr, byte>();
-                String path2 = "C:\\images\\board\\test2.png";
+                String timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+                String path = "C:\\images\\board\\imgScene_" + timeStamp + ".png";
+                imgScene.Save(path);
                 
-                imgScene.Save(path2);
-                /*
+                if (imgScene != null)
+                {
+                    //use a copy as not to adjust the original image
+                    using (Image<Hls, Byte> Temp = imgScene.Copy())
+                    {
+                        //Temp[0] += 100;
+                        //Temp[1] += 50;
+                        Temp[2] += 100;
+                        Temp.Save("C:\\images\\board\\imgScene_sat" + timeStamp + ".png");
+                        imgScene = Temp.Convert<Hls, byte>();
+                    }
+                }
+ 
+                
 
                 Mat imgOut = new Mat();
                 CvInvoke.MatchTemplate(imgScene, template, imgOut, Emgu.CV.CvEnum.TemplateMatchingType.Sqdiff);
+                
 
                 Mat imgOutNorm = new Mat();
 
-                CvInvoke.Normalize(imgOut, imgOutNorm, 0, 1, Emgu.CV.CvEnum.NormType.MinMax, Emgu.CV.CvEnum.DepthType.Cv64F);
+                //CvInvoke.Normalize(imgOut, imgOutNorm, 0, 1, Emgu.CV.CvEnum.NormType.MinMax, Emgu.CV.CvEnum.DepthType.Cv64F);
 
-                Matrix<double> matches = new Matrix<double>(imgOutNorm.Size);
-                imgOutNorm.CopyTo(matches);
-
+                Matrix<float> matches = new Matrix<float>(imgOut.Size);
+                //imgOutNorm.CopyTo(matches);
+                //imgOut.CopyTo(matches);
+                /*
+                for (int i =0; i < matches.Cols;i++) {
+                    for (int j = 0; j < matches.Rows;j++) {
+                        System.Console.WriteLine(matches[j,i]);
+                    }
+                }
+                */
                 double minValue = 0, maxVal = 0;
                 Point minLoc = new Point();
                 Point maxLoc = new Point();
 
-                do
+                CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
+                imgOut.CopyTo(matches);
+                //imgOutNorm.CopyTo(matches);
+                int count = 0;
+                CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
+                while (minValue <= threshold && count < 16)
                 {
                     CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
                     Rectangle r = new Rectangle(minLoc, template.Size);
                     CvInvoke.Rectangle(imgScene, r, new MCvScalar(255, 0, 0), 1);
+                    matches[minLoc.Y, minLoc.X] = threshold+1;
+                    matches[maxLoc.Y, maxLoc.X] = threshold+1;
+                    count++;
 
-                    matches[minLoc.Y, minLoc.X] = 0.5;
-                    matches[maxLoc.Y, maxLoc.X] = 0.5;
-                } while (minValue <= threshold);
-
+                }
                 pictureBox3.Image = imgScene.AsBitmap();
-                String path = "C:\\images\\board\\test.png";
-                imgScene.Save(path);
-                */
+                timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+                String path2 = "C:\\images\\board\\match_" + timeStamp + ".png";
+                imgScene.Save(path2);
+
+                
 
 
             }
@@ -132,13 +165,11 @@ namespace QRSode
         {
             try
             {
-                //imgList.Clear();
                 OpenFileDialog dialog = new OpenFileDialog();
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    var img = new Image<Bgr, byte>(dialog.FileName);
-                    //AddImage(img, "Input");
-                    pictureBox2.Image = img.AsBitmap();
+                    template = new Image<Hls, byte>(dialog.FileName);
+                    pictureBox2.Image = template.AsBitmap();
                 }
             }
             catch (Exception ex)
@@ -147,7 +178,7 @@ namespace QRSode
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void detectbtn_Click(object sender, EventArgs e)
         {
             ApplyMultiObjectDetectionTM();
         }

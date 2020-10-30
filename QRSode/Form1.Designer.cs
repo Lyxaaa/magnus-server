@@ -58,7 +58,7 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(418, 12);
+            this.btnStart.Location = new System.Drawing.Point(699, 20);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 1;
@@ -80,13 +80,13 @@
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox1.Location = new System.Drawing.Point(12, 57);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(362, 281);
+            this.pictureBox1.Size = new System.Drawing.Size(584, 506);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
             // txtQrCode
             // 
-            this.txtQrCode.Location = new System.Drawing.Point(516, 12);
+            this.txtQrCode.Location = new System.Drawing.Point(824, 20);
             this.txtQrCode.Multiline = true;
             this.txtQrCode.Name = "txtQrCode";
             this.txtQrCode.Size = new System.Drawing.Size(292, 74);
@@ -99,7 +99,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(393, 132);
+            this.pictureBox2.Location = new System.Drawing.Point(602, 190);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(234, 206);
             this.pictureBox2.TabIndex = 5;
@@ -107,7 +107,7 @@
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(708, 132);
+            this.pictureBox3.Location = new System.Drawing.Point(901, 190);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(215, 206);
             this.pictureBox3.TabIndex = 6;
@@ -116,7 +116,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(415, 104);
+            this.label2.Location = new System.Drawing.Point(644, 157);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 13);
             this.label2.TabIndex = 7;
@@ -125,7 +125,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(729, 104);
+            this.label3.Location = new System.Drawing.Point(939, 157);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(40, 13);
             this.label3.TabIndex = 8;
@@ -134,7 +134,7 @@
             // 
             // tempbtn
             // 
-            this.tempbtn.Location = new System.Drawing.Point(490, 104);
+            this.tempbtn.Location = new System.Drawing.Point(761, 152);
             this.tempbtn.Name = "tempbtn";
             this.tempbtn.Size = new System.Drawing.Size(75, 23);
             this.tempbtn.TabIndex = 9;
@@ -144,19 +144,19 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(797, 104);
+            this.button1.Location = new System.Drawing.Point(1032, 152);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
             this.button1.Text = "detect";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.detectbtn_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1012, 557);
+            this.ClientSize = new System.Drawing.Size(1198, 761);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tempbtn);
             this.Controls.Add(this.label3);
