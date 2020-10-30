@@ -77,7 +77,7 @@ namespace QRSode
             */
         }
 
-        private void ApplyMultiObjectDetectionTM(float threshold = 6000000f)
+        private void ApplyMultiObjectDetectionTM(float threshold = 5000000f)
         {
             try
             {
@@ -112,7 +112,8 @@ namespace QRSode
                         int index = i + (8 * j);
                         RectangleF tileRect = new RectangleF(i * twidth, j * theight, twidth, theight);
                         tiles[index] = imgbitmap.Clone(tileRect, format);
-                        tiles[index].Save("C:\\images\\board\\SatTile_"+ index + "_" + timeStamp + ".png");
+                        //tiles[index].Save("C:\\images\\board\\SatTile_"+ index + "_" + timeStamp + ".png");
+                        tiles[index].Save("C:\\images\\board\\SatTile_" + index + "_" + ".png");
                     }
                 }
 
@@ -148,9 +149,10 @@ namespace QRSode
                         CvInvoke.Rectangle(tile, r, new MCvScalar(255, 0, 0), 1);
                         matches[minLoc.Y, minLoc.X] = threshold + 1;
                         matches[maxLoc.Y, maxLoc.X] = threshold + 1;
-                        txtQrCode.Text += "tile " + i + System.Environment.NewLine;
+                        txtQrCode.Text += "tile: " + i + " Sqdiff:" + minValue + System.Environment.NewLine;
                     }
-                    tile.Save("C:\\images\\board\\SatTile_matched_" + i + "_" + timeStamp + ".png");
+                    //tile.Save("C:\\images\\board\\SatTile_matched_" + i + "_" + timeStamp + ".png");
+                    tile.Save("C:\\images\\board\\SatTile_matched_" + i + ".png");
 
                 }
 
