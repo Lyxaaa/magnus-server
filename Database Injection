@@ -1,0 +1,100 @@
+SET FOREIGN_KEY_CHECKS=0;
+SET GLOBAL FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS language_preferences;
+DROP TABLE IF EXISTS message;
+DROP TABLE IF EXISTS match_between;
+DROP TABLE IF EXISTS matches;
+DROP TABLE IF EXISTS in_conversation;
+DROP TABLE IF EXISTS conversation;
+DROP TABLE IF EXISTS friends;
+DROP TABLE IF EXISTS friend_request;
+DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS=1;
+SET GLOBAL FOREIGN_KEY_CHECKS=1;
+
+CREATE TABLE users
+(
+  Email VARCHAR(320) NOT NULL,
+  Password VARCHAR(24) NOT NULL,
+  Name VARCHAR(25) NOT NULL,
+  Bio VARCHAR(500) NOT NULL,
+  Profile_Pic VARCHAR(50) NOT NULL,
+  PRIMARY KEY (Email)
+);
+
+CREATE TABLE conversation
+(
+  Conversation_ID INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (Conversation_ID)
+);
+
+
+CREATE TABLE matches
+(
+  Match_ID INT NOT NULL AUTO_INCREMENT,	
+  Start_DateTime int(32) NOT NULL,
+  Ended tinyint(1) DEFAULT 0,
+  Last_Board_State VARCHAR(320) DEFAULT "2,3,4,6,5,4,3,2,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,7,7,7,7,7,8,9,10,12,11,10,9,8" NOT NULL,
+  PRIMARY KEY (Match_ID)
+);
+
+CREATE TABLE message
+(
+  Message_ID INT NOT NULL AUTO_INCREMENT,
+  Text VARCHAR(500) NOT NULL,
+  DateTime BIGINT DEFAULT 0 NOT NULL,
+  Conversation_ID INT NOT NULL,
+  Sender_Email VARCHAR(320) NOT NULL,
+  PRIMARY KEY (Message_ID),
+  FOREIGN KEY (Conversation_ID) REFERENCES Conversation(Conversation_ID),
+  FOREIGN KEY (Sender_Email) REFERENCES Users(Email)
+);
+
+
+CREATE TABLE match_between
+(
+  Email VARCHAR(320) NOT NULL,
+  Match_ID INT NOT NULL,
+  PRIMARY KEY (Email, Match_ID),
+  FOREIGN KEY (Email) REFERENCES Users(Email),
+  FOREIGN KEY (Match_ID) REFERENCES Matches(Match_ID)
+);
+
+
+CREATE TABLE in_conversation
+(
+  Display_Name VARCHAR(20) Default 'unnamed',
+  Conversation_ID INT NOT NULL,
+  Email VARCHAR(320) NOT NULL,
+  PRIMARY KEY (Conversation_ID, Email),
+  FOREIGN KEY (Conversation_ID) REFERENCES Conversation(Conversation_ID),
+  FOREIGN KEY (Email) REFERENCES Users(Email)
+);
+
+
+CREATE TABLE friends
+(
+  Email_1 VARCHAR(320) NOT NULL,
+  Email_2 VARCHAR(320) NOT NULL,
+  PRIMARY KEY (Email_1, Email_2),
+  FOREIGN KEY (Email_1) REFERENCES Users(Email),
+  FOREIGN KEY (Email_2) REFERENCES Users(Email)
+);
+
+CREATE TABLE friend_request
+(
+  DateTime BIGINT Default 0 NOT NULL,
+  Sender VARCHAR(320) NOT NULL,
+  Reciver VARCHAR(320) NOT NULL,
+  PRIMARY KEY (Sender, Reciver),
+  FOREIGN KEY (Sender) REFERENCES Users(Email),
+  FOREIGN KEY (Reciver) REFERENCES Users(Email)
+);
+
+CREATE TABLE language_preferences
+(
+  Email_1 VARCHAR(320) NOT NULL,
+  Language_Preference VARCHAR(20) NOT NULL,
+  PRIMARY KEY (Email_1, Language_Preference ),
+  FOREIGN KEY (Email_1) REFERENCES Users(Email)
+);

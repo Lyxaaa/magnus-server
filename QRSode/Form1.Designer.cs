@@ -42,6 +42,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.tempbtn = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.nextbtn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -58,7 +59,7 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(418, 12);
+            this.btnStart.Location = new System.Drawing.Point(276, 20);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 1;
@@ -80,17 +81,18 @@
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.pictureBox1.Location = new System.Drawing.Point(12, 57);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(362, 281);
+            this.pictureBox1.Size = new System.Drawing.Size(584, 506);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
             // txtQrCode
             // 
-            this.txtQrCode.Location = new System.Drawing.Point(516, 12);
+            this.txtQrCode.Location = new System.Drawing.Point(407, 3);
             this.txtQrCode.Multiline = true;
             this.txtQrCode.Name = "txtQrCode";
-            this.txtQrCode.Size = new System.Drawing.Size(292, 74);
+            this.txtQrCode.Size = new System.Drawing.Size(283, 40);
             this.txtQrCode.TabIndex = 4;
+            this.txtQrCode.TextChanged += new System.EventHandler(this.txtQrCode_TextChanged);
             // 
             // timer1
             // 
@@ -99,24 +101,24 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(393, 132);
+            this.pictureBox2.Location = new System.Drawing.Point(602, 103);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(234, 206);
+            this.pictureBox2.Size = new System.Drawing.Size(140, 106);
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(708, 132);
+            this.pictureBox3.Location = new System.Drawing.Point(823, 62);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(215, 206);
+            this.pictureBox3.Size = new System.Drawing.Size(250, 200);
             this.pictureBox3.TabIndex = 6;
             this.pictureBox3.TabStop = false;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(415, 104);
+            this.label2.Location = new System.Drawing.Point(625, 62);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 13);
             this.label2.TabIndex = 7;
@@ -125,7 +127,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(729, 104);
+            this.label3.Location = new System.Drawing.Point(842, 30);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(40, 13);
             this.label3.TabIndex = 8;
@@ -134,7 +136,7 @@
             // 
             // tempbtn
             // 
-            this.tempbtn.Location = new System.Drawing.Point(490, 104);
+            this.tempbtn.Location = new System.Drawing.Point(615, 78);
             this.tempbtn.Name = "tempbtn";
             this.tempbtn.Size = new System.Drawing.Size(75, 23);
             this.tempbtn.TabIndex = 9;
@@ -144,19 +146,30 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(797, 104);
+            this.button1.Location = new System.Drawing.Point(930, 23);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
             this.button1.Text = "detect";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.detectbtn_Click);
+            // 
+            // nextbtn
+            // 
+            this.nextbtn.Location = new System.Drawing.Point(930, 269);
+            this.nextbtn.Name = "nextbtn";
+            this.nextbtn.Size = new System.Drawing.Size(75, 23);
+            this.nextbtn.TabIndex = 11;
+            this.nextbtn.Text = "Next";
+            this.nextbtn.UseVisualStyleBackColor = true;
+            this.nextbtn.Click += new System.EventHandler(this.nextbtn_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1012, 557);
+            this.ClientSize = new System.Drawing.Size(1383, 761);
+            this.Controls.Add(this.nextbtn);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.tempbtn);
             this.Controls.Add(this.label3);
@@ -196,6 +209,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button tempbtn;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button nextbtn;
     }
 }
 
