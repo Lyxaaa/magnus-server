@@ -1,14 +1,15 @@
 ﻿using Include;
 using Include.Util;
+using Magnus;
 using Priority_Queue;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using Magnus;
 
 namespace Tangible {
     // this is a single piece move
@@ -587,6 +588,12 @@ namespace Tangible {
             UDPSocket socket = new UDPSocket();
             socket.Begin("192.168.1.42", 13579);
 
+            SerialPort serialPort = new SerialPort();
+            var names = SerialPort.GetPortNames();
+            if (names.Length > 0) serialPort.PortName = names[0];
+            else Console.WriteLine("Board not detected");
+            serialPort.BaudRate = 250000;
+
             // so our thread runs
             run = true;
 
@@ -600,6 +607,8 @@ namespace Tangible {
             // scan update boardstate when we get a message
             Thread read = new Thread(new ThreadStart(Read));
             read.Start();
+
+            Thread serialread = new Thread(new ThreadStart(() => { SerialRead(serialPort); }));
 
             //test the board state
             BoardState board = new BoardState();
@@ -648,11 +657,111 @@ namespace Tangible {
              };
             board.PrintPath(pathTest);
 
+            bool exit = false;
+            do {
+                string cmd = Console.ReadLine();
+                string[] splt = cmd.Split(' ');
+                if (splt.Length < 1) continue;
+                switch (splt[0]) {
+                    case "set":
+                        Console.WriteLine("Available Ports:");
+                        foreach (string s in SerialPort.GetPortNames()) {
+                            Console.WriteLine("   {0}", s);
+                        }
+                        Console.WriteLine("Enter COM port value (Default: {0}): ", serialPort.PortName);
+
+                        string portName = Console.ReadLine();
+                        if (portName == "" || !(portName.ToLower()).StartsWith("com")) {
+                            Console.WriteLine($"Could not parse port name, setting to {serialPort.PortName}");
+                        } else {
+                            serialPort.PortName = portName;
+                            Console.WriteLine($"Setting port to {portName}");
+                        }
+
+                        Console.WriteLine("Set BaudRate (Default: 250000):");
+                        try {
+                            int val = int.Parse(Console.ReadLine());
+                            serialPort.BaudRate = val;
+                            Console.Write($"Setting baudrate to {val}");
+                        } catch {
+                            Console.Write($"Could not parse baud rate, defaulting to {serialPort.BaudRate}");
+                        }
+                        break;
+                    case "open":
+                    case "start":
+                    case "connect":
+                        serialPort.Open();
+                        serialread.Start();
+                        break;
+                    case "home":
+                        Home(serialPort);
+                        WaitForEnd(serialPort);
+                        break;
+                    case "up":
+                        ControlMagnet(serialPort, true);
+                        WaitForEnd(serialPort);
+                        break;
+                    case "down":
+                        ControlMagnet(serialPort, false);
+                        WaitForEnd(serialPort);
+                        break;
+                    case "off":
+                        MotorsOff(serialPort);
+                        WaitForEnd(serialPort);
+                        break;
+                    case "move":
+                        try {
+                            if (splt.Length == 4) {
+                                bool fast = bool.Parse(splt[3]);
+                                int x = int.Parse(splt[1]);
+                                int y = int.Parse(splt[2]);
+                                MoveSquare(serialPort, x, y, fast);
+                            } else if (splt.Length == 6) {
+                                if (splt[3] != "to" && splt[3] != "To") throw new Exception();
+                                int x1 = int.Parse(splt[1]);
+                                int y1 = int.Parse(splt[2]);
+                                int x2 = int.Parse(splt[4]);
+                                int y2 = int.Parse(splt[5]);
+                                ControlMagnet(serialPort, false);
+                                WaitForEnd(serialPort);
+                                MoveSquare(serialPort, x1, y1, true);
+                                WaitForEnd(serialPort);
+                                ControlMagnet(serialPort, true);
+                                WaitForEnd(serialPort);
+                                MoveSquare(serialPort, x2, y2, false);
+                                WaitForEnd(serialPort);
+                                ControlMagnet(serialPort, false);
+                                WaitForEnd(serialPort);
+                            } else if (splt.Length == 7) {
+                                if (splt[1] != "from" && splt[1] != "From") throw new Exception();
+                                if (splt[4] != "to" && splt[4] != "To") throw new Exception();
+
+
+
+                            } else {
+                                throw new Exception();
+                            }
+                        } catch {
+                            Console.WriteLine("invalid move command");
+                        }
+                        break;
+                    case "exit":
+                    case "quit":
+                        exit = true;
+                        break;
+                    default:
+                        Console.WriteLine("Command not recognised");
+                        break;
+                }
+            } while (!exit);
+
             // on receive coordinates, move piece
             Log.I("Tangible: Press any key to end");
             Console.ReadKey();
 
+            if (serialPort.IsOpen) serialPort.Close();
             run = false;
+            serialread.Join();
             read.Join();
             write.Join();
             socket.End();
@@ -661,21 +770,79 @@ namespace Tangible {
             Console.ReadKey();
         }
 
-       static ConcurrentQueue<byte[]> dataQueue = new ConcurrentQueue<byte[]>();
+        static ConcurrentQueue<byte[]> dataQueue = new ConcurrentQueue<byte[]>();
         static void Write(IPEndPoint endpoint, byte[] data) { // write virtual board state to real board
             Log.D("Got new boardstate from device");
             dataQueue.Enqueue(data);
-            
-            // find difference between two board states
-            // remove pieces first
-            // while pieces arent where they should be
-            // foreach piece
-            // if spot is free, move piece to spot
-            // wait for input
+        }
+
+        static void SerialWrite(SerialPort serialPort, string msg) {
+            var noo = msg + "\n";
+            if (!serialPort.IsOpen) {
+                Console.WriteLine("Serial port not open");
+                return;
+            }
+            char[] message = Encoding.ASCII.GetChars(Encoding.ASCII.GetBytes(noo));
+            serialPort.Write(message, 0, message.Length);
+            Console.WriteLine($"Sent: {msg}");
+        }
+
+        static void SerialRead(SerialPort serial) {
+            while (run) {
+                try {
+                    string message = serial.ReadLine();
+                    Console.WriteLine($"Board: {message}");
+                } catch (TimeoutException) { }
+            }
+        }
+
+        static void Home(SerialPort serialPort) {
+            SerialWrite(serialPort, "G28 X Y");
+        }
+
+        private static void MotorsOff(SerialPort serialPort) {
+            SerialWrite(serialPort, "M84");
+        }
+
+        private static void MovePath(SerialPort serialPort, int x, int y) {
+            bool error = false;
+            if (x <= 1) {
+                Console.WriteLine($"x bad: {x}");
+                error = true;
+            }
+            if (y <= 1) {
+                Console.WriteLine($"y bad: {y}");
+                error = true;
+            }
+            if (error) return;
+
+            x--;
+            y--;
+            SerialWrite(serialPort, $"G1 X{66.8 * (x / 14f)} Y{66.8 * (y / 17f)}");
+        }
+
+        private static void MoveSquare(SerialPort serialPort, int x, int y, bool fast = true) {
+            if (fast) {
+                SerialWrite(serialPort, "G1 F5000");
+            } else {
+                SerialWrite(serialPort, "G1 F600");
+            }
+            SerialWrite(serialPort, $"G1 X{66.8 * (x / 7f)} Y{66.8 * (y / 7f)}");
+        }
+        static void WaitForEnd(SerialPort serialPort) {
+            SerialWrite(serialPort, "M400");
+        }
+
+        static void ControlMagnet(SerialPort serialPort, bool up) {
+            if (up) {
+                SerialWrite(serialPort, "M280 P0 S15");
+            } else {
+                SerialWrite(serialPort, "M280 P0 S85");
+            }
         }
 
         static void DeQueue() {
-            while(dataQueue.TryDequeue(out var data)) {
+            while (dataQueue.TryDequeue(out var data)) {
                 ChessPiece[] state = Array.ConvertAll(data, c => (ChessPiece)c);
                 BoardState.PrintState(state);
             }
