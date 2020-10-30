@@ -81,10 +81,7 @@ namespace QRSode
         {
             try
             {
-                //var imgScene = imgList["Input"].Clone();
                 var imgScene = new Bitmap(pictureBox1.Image).ToImage<Hls, byte>();
-                //var template = new Bitmap(pictureBox1.Image).ToImage<Bgr, byte>();
-                //var template = new Bitmap(pictureBox2.Image).ToImage<Bgr, byte>();
                 String timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
                 String path = "C:\\images\\board\\imgScene_" + timeStamp + ".png";
                 imgScene.Save(path);
@@ -92,56 +89,76 @@ namespace QRSode
                 if (imgScene != null)
                 {
                     //use a copy as not to adjust the original image
+                    //this adjusts the saturation
                     using (Image<Hls, Byte> Temp = imgScene.Copy())
                     {
-                        //Temp[0] += 100;
-                        //Temp[1] += 50;
+                        //Temp[0] += 0;
+                        //Temp[1] += 0;
                         Temp[2] += 100;
                         Temp.Save("C:\\images\\board\\imgScene_sat" + timeStamp + ".png");
                         imgScene = Temp.Convert<Hls, byte>();
                     }
                 }
- 
-                
-
-                Mat imgOut = new Mat();
-                CvInvoke.MatchTemplate(imgScene, template, imgOut, Emgu.CV.CvEnum.TemplateMatchingType.Sqdiff);
-                
-
-                Mat imgOutNorm = new Mat();
-
-                //CvInvoke.Normalize(imgOut, imgOutNorm, 0, 1, Emgu.CV.CvEnum.NormType.MinMax, Emgu.CV.CvEnum.DepthType.Cv64F);
-
-                Matrix<float> matches = new Matrix<float>(imgOut.Size);
-                //imgOutNorm.CopyTo(matches);
-                //imgOut.CopyTo(matches);
-                /*
-                for (int i =0; i < matches.Cols;i++) {
-                    for (int j = 0; j < matches.Rows;j++) {
-                        System.Console.WriteLine(matches[j,i]);
+                //seperate the image into tiles
+                Bitmap imgbitmap = imgScene.AsBitmap();
+                System.Drawing.Imaging.PixelFormat format = imgbitmap.PixelFormat;
+                int twidth = imgbitmap.Width/8;
+                int theight = imgbitmap.Height/8;
+                Bitmap[] tiles = new Bitmap[64];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        int index = i + (8 * j);
+                        RectangleF tileRect = new RectangleF(i * twidth, j * theight, twidth, theight);
+                        tiles[index] = imgbitmap.Clone(tileRect, format);
+                        tiles[index].Save("C:\\images\\board\\SatTile_"+ index + "_" + timeStamp + ".png");
                     }
                 }
-                */
-                double minValue = 0, maxVal = 0;
-                Point minLoc = new Point();
-                Point maxLoc = new Point();
 
-                CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
-                imgOut.CopyTo(matches);
-                //imgOutNorm.CopyTo(matches);
-                int count = 0;
-                CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
-                while (minValue <= threshold && count < 16)
-                {
+                for (int i = 0; i < tiles.Length; i++) {
+                    var tile = tiles[i].ToImage<Hls, byte>();
+
+                    Mat imgOut = new Mat();
+                    
+                    //this does the matching useing square difference between the template and the image
+                    CvInvoke.MatchTemplate(tile, template, imgOut, Emgu.CV.CvEnum.TemplateMatchingType.Sqdiff);
+
+
+                    Mat imgOutNorm = new Mat();
+
+                    //we dont want to normalize as that would cause their to always be a "perfect" match
+                    //CvInvoke.Normalize(imgOut, imgOutNorm, 0, 1, Emgu.CV.CvEnum.NormType.MinMax, Emgu.CV.CvEnum.DepthType.Cv64F);
+
+                    //creates the matrix that will contain the difference values
+                    Matrix<float> matches = new Matrix<float>(imgOut.Size);
+
+                    double minValue = 0, maxVal = 0;
+                    Point minLoc = new Point();
+                    Point maxLoc = new Point();
+
+                    //fill the match matrix
+                    imgOut.CopyTo(matches);
+                    //find the min max and associated locations
                     CvInvoke.MinMaxLoc(matches, ref minValue, ref maxVal, ref minLoc, ref maxLoc);
-                    Rectangle r = new Rectangle(minLoc, template.Size);
-                    CvInvoke.Rectangle(imgScene, r, new MCvScalar(255, 0, 0), 1);
-                    matches[minLoc.Y, minLoc.X] = threshold+1;
-                    matches[maxLoc.Y, maxLoc.X] = threshold+1;
-                    count++;
+                    //will need to adjust the threshhold value to get good matches
+                    if (minValue <= threshold)
+                    {
+                        Rectangle r = new Rectangle(minLoc, template.Size);
+                        CvInvoke.Rectangle(tile, r, new MCvScalar(255, 0, 0), 1);
+                        matches[minLoc.Y, minLoc.X] = threshold + 1;
+                        matches[maxLoc.Y, maxLoc.X] = threshold + 1;
+                        txtQrCode.Text += "tile " + i + System.Environment.NewLine;
+                    }
+                    tile.Save("C:\\images\\board\\SatTile_matched_" + i + "_" + timeStamp + ".png");
 
                 }
-                pictureBox3.Image = imgScene.AsBitmap();
+
+
+                
+
+                //pictureBox3.Image = imgScene.AsBitmap();
+                pictureBox3.Image = tiles[10];
                 timeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
                 String path2 = "C:\\images\\board\\match_" + timeStamp + ".png";
                 imgScene.Save(path2);
@@ -181,6 +198,11 @@ namespace QRSode
         private void detectbtn_Click(object sender, EventArgs e)
         {
             ApplyMultiObjectDetectionTM();
+        }
+
+        private void txtQrCode_TextChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
