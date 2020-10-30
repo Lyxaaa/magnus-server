@@ -740,6 +740,11 @@ namespace Tangible {
                                 if (splt[1] != "from" && splt[1] != "From") throw new Exception();
                                 if (splt[4] != "to" && splt[4] != "To") throw new Exception();
 
+                                int x1 = int.Parse(splt[2]);
+                                int y1 = int.Parse(splt[3]);
+                                int x2 = int.Parse(splt[5]);
+                                int y2 = int.Parse(splt[6]);
+
                                 MovePath(serialPort, 0, 0);
                                 WaitForEnd(serialPort);
                                 MovePath(serialPort, 15, 0);
@@ -750,7 +755,6 @@ namespace Tangible {
                                 WaitForEnd(serialPort);
                                 MovePath(serialPort, 0, 0);
                                 WaitForEnd(serialPort);
-
                             } else {
                                 throw new Exception();
                             }
